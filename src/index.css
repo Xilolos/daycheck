@@ -1,7 +1,23 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { margin: 0; padding: 0; height: 100%; }
+html {
+  overscroll-behavior: none;
+}
 body {
   font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  /* Prevent iOS rubber-band scroll on the body itself */
+  position: fixed;
+  width: 100%;
 }
 *::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Lock to portrait — show a nudge in landscape */
+@media screen and (orientation: landscape) {
+  #root { display: none; }
+  #rotate-msg {
+    display: flex !important;
+  }
+}
+#rotate-msg { display: none; }
