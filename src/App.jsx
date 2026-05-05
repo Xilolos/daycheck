@@ -95,7 +95,19 @@ export default function App() {
       setAuthLoading(false);
     });
 
-    // Trigger initial session detection (handles ?code= from OAuth redirect too)
+    // Manually handle OAuth token in URL hash (implicit flow)
+    const hash = window.location.hash;
+    if (hash.includes('access_token')) {
+      const params = new URLSearchParams(hash.replace(/^#/, ''));
+      const access_token = params.get('access_token');
+      const refresh_token = params.get('refresh_token');
+      if (access_token && refresh_token) {
+        window.history.replaceState({}, '', window.location.pathname);
+        supabase.auth.setSession({ access_token, refresh_token });
+        return () => subscription.unsubscribe();
+      }
+    }
+
     supabase.auth.getSession();
 
     return () => subscription.unsubscribe();
