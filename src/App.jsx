@@ -55,7 +55,17 @@ export default function App() {
         await supabase.from('trackers').insert(DEFAULT_TRACKERS.map(tr => ({ ...tr, user_id: u.id })));
         setTrackers(DEFAULT_TRACKERS);
       } else {
-        setTrackers(trackerRows.map(({ id, name, type, unit }) => ({ id, name, type, ...(unit ? { unit } : {}) })));
+        const mapped = trackerRows.map(({ id, name, type, unit }) => ({ id, name, type, ...(unit ? { unit } : {}) }));
+        const savedOrder = loadPref('dc_tracker_order', null);
+        if (savedOrder) {
+          mapped.sort((a, b) => {
+            const ai = savedOrder.indexOf(a.id), bi = savedOrder.indexOf(b.id);
+            if (ai === -1 && bi === -1) return 0;
+            if (ai === -1) return 1; if (bi === -1) return -1;
+            return ai - bi;
+          });
+        }
+        setTrackers(mapped);
       }
 
       const built = {};
@@ -98,6 +108,11 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
+  const reorderTrackers = useCallback((newOrder) => {
+    setTrackers(newOrder);
+    savePref('dc_tracker_order', newOrder.map(t => t.id));
+  }, []);
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
   };
@@ -112,6 +127,11 @@ export default function App() {
   const theme = dark
     ? { bg: '#0B0B0C', text: '#F5F5F5', dim: '#8A8A8E', faint: '#3A3A3D', rule: '#1F1F22', stripe: '#0E0E10', accent }
     : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#FAFAFA', accent };
+
+  useEffect(() => {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme.bg);
+  }, [theme.bg]);
 
   const fontStack = fontMode === 'mono'
     ? `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`
@@ -304,6 +324,7 @@ export default function App() {
             onEditTracker={(id) => setEditingTrackerId(id)}
             onAddTracker={() => setEditingTrackerId('new')}
             onRemoveTracker={removeTracker}
+            onReorderTrackers={reorderTrackers}
             onSignOut={handleSignOut}
             userEmail={user.email}
           />

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { TYPE_META } from '../constants';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 
-export function Settings({ theme, trackers, themeMode, fontMode, accent, onThemeMode, onFontMode, onAccent, onBack, onEditTracker, onAddTracker, onRemoveTracker, onSignOut, userEmail }) {
+export function Settings({ theme, trackers, themeMode, fontMode, accent, onThemeMode, onFontMode, onAccent, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const [open, setOpen] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
 
@@ -61,24 +61,15 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, onTheme
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 180 }}>
+        <div>
           <SectionLabel theme={theme}>TRACKERS</SectionLabel>
-          <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-            {trackers.map((tr) => (
-              <div key={tr.id} onClick={() => onEditTracker(tr.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: `1px solid ${theme.rule}`, cursor: 'pointer' }}>
-                <div>
-                  <div style={{ fontSize: 13, letterSpacing: '0.06em' }}>{tr.name}</div>
-                  <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em' }}>
-                    {TYPE_META[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}
-                  </div>
-                </div>
-                <span style={{ color: theme.dim }}>›</span>
-              </div>
-            ))}
-            <div onClick={onAddTracker} style={{ padding: '12px 14px', color: theme.dim, fontSize: 12, cursor: 'pointer', letterSpacing: '0.04em' }}>
-              + Add tracker
-            </div>
-          </div>
+          <TrackerList
+            theme={theme}
+            trackers={trackers}
+            onEditTracker={onEditTracker}
+            onAddTracker={onAddTracker}
+            onReorderTrackers={onReorderTrackers}
+          />
         </div>
 
         <div style={{ borderTop: `1px solid ${theme.rule}`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -93,6 +84,121 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, onTheme
         <div style={{ fontSize: 10, color: theme.faint, lineHeight: 1.6, textAlign: 'center' }}>
           DAYCHECK V0.1 · LONG-PRESS A CELL FOR QUICK ACTIONS
         </div>
+      </div>
+    </div>
+  );
+}
+
+function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTrackers }) {
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  const listRef = useRef(null);
+  const state = useRef({ active: false, from: null });
+  const latestOver = useRef(null);
+  const latestTrackers = useRef(trackers);
+  latestTrackers.current = trackers;
+
+  const commit = (from, to) => {
+    if (from == null || to == null || from === to) return;
+    const next = [...latestTrackers.current];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    onReorderTrackers(next);
+  };
+
+  const getRowIdx = (clientY) => {
+    if (!listRef.current) return null;
+    const rows = listRef.current.querySelectorAll('[data-row]');
+    for (let i = 0; i < rows.length; i++) {
+      const r = rows[i].getBoundingClientRect();
+      if (clientY < r.top + r.height / 2) return i;
+    }
+    return rows.length - 1;
+  };
+
+  // Touch drag
+  useEffect(() => {
+    const el = listRef.current;
+    if (!el) return;
+
+    const onMove = (e) => {
+      if (!state.current.active) return;
+      e.preventDefault();
+      const idx = getRowIdx(e.touches[0].clientY);
+      if (idx !== null) { latestOver.current = idx; setOverIdx(idx); }
+    };
+
+    const onEnd = () => {
+      if (!state.current.active) return;
+      commit(state.current.from, latestOver.current);
+      state.current = { active: false, from: null };
+      latestOver.current = null;
+      setDragIdx(null);
+      setOverIdx(null);
+    };
+
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd);
+    return () => { el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd); };
+  }, []);  // refs keep everything current
+
+  const onHandleTouchStart = (e, i) => {
+    e.stopPropagation();
+    state.current = { active: true, from: i };
+    latestOver.current = i;
+    setDragIdx(i);
+    setOverIdx(i);
+  };
+
+  // Mouse drag (desktop)
+  const onDragStart = (e, i) => { e.dataTransfer.effectAllowed = 'move'; setDragIdx(i); };
+  const onDragEnter = (i) => setOverIdx(i);
+  const onDragEnd = () => { commit(dragIdx, overIdx); setDragIdx(null); setOverIdx(null); };
+
+  return (
+    <div ref={listRef} style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
+      {trackers.map((tr, i) => {
+        const isDragging = dragIdx === i;
+        const isOver = overIdx === i && dragIdx !== i;
+        return (
+          <div
+            key={tr.id}
+            data-row
+            draggable
+            onDragStart={(e) => onDragStart(e, i)}
+            onDragEnter={() => onDragEnter(i)}
+            onDragOver={(e) => e.preventDefault()}
+            onDragEnd={onDragEnd}
+            style={{
+              display: 'flex', alignItems: 'center',
+              borderBottom: `1px solid ${theme.rule}`,
+              opacity: isDragging ? 0.35 : 1,
+              background: isOver ? theme.faint : 'transparent',
+              transition: 'opacity 0.15s, background 0.12s',
+            }}
+          >
+            <div
+              onClick={() => onEditTracker(tr.id)}
+              style={{ flex: 1, padding: '12px 14px', cursor: 'pointer' }}
+            >
+              <div style={{ fontSize: 13, letterSpacing: '0.06em' }}>{tr.name}</div>
+              <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em' }}>
+                {TYPE_META[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}
+              </div>
+            </div>
+            <div
+              onTouchStart={(e) => onHandleTouchStart(e, i)}
+              style={{ padding: '12px 14px', cursor: 'grab', touchAction: 'none', display: 'flex', flexDirection: 'column', gap: 3 }}
+            >
+              {[0,1,2].map(n => (
+                <div key={n} style={{ width: 16, height: 1.5, borderRadius: 1, background: theme.faint }} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      <div onClick={onAddTracker} style={{ padding: '12px 14px', color: theme.dim, fontSize: 12, cursor: 'pointer', letterSpacing: '0.04em' }}>
+        + Add tracker
       </div>
     </div>
   );
