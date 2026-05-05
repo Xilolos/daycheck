@@ -71,18 +71,28 @@ export default function App() {
     }
   }, []);
 
+  const loadedForUser = useRef(null);
+
+  useEffect(() => {
+    if (user) {
+      if (loadedForUser.current !== user.id) {
+        loadedForUser.current = user.id;
+        loadData(user);
+      }
+    } else {
+      loadedForUser.current = null;
+    }
+  }, [user, loadData]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) { setUser(session.user); loadData(session.user); }
+      setUser(session?.user ?? null);
       setAuthLoading(false);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (session) {
-        setUser(session.user);
-        if (event === 'SIGNED_IN') loadData(session.user);
-      } else {
-        setUser(null);
+      setUser(session?.user ?? null);
+      if (!session) {
         setData({});
         setTrackers(DEFAULT_TRACKERS);
         setScreen('main');
@@ -90,7 +100,7 @@ export default function App() {
     });
 
     return () => subscription.unsubscribe();
-  }, [loadData]);
+  }, []);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
