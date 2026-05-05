@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { DEFAULT_TRACKERS } from './constants';
+import { LangContext } from './i18n';
 import { pad2, dateKey, parseTimeToMin, minToTime, TODAY } from './utils';
 import { supabase } from './supabase';
 import Onboarding from './components/Onboarding';
@@ -24,11 +25,13 @@ export default function App() {
   const [fontMode, setFontModeState] = useState(() => loadPref('dc_fontMode', 'mono'));
   const [accent, setAccentState] = useState(() => loadPref('dc_accent', '#E5234B'));
   const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', null));
+  const [lang, setLangState] = useState(() => loadPref('dc_lang', 'en'));
 
   const setThemeMode  = (v) => { setThemeModeState(v);  savePref('dc_themeMode', v);  };
   const setFontMode   = (v) => { setFontModeState(v);   savePref('dc_fontMode', v);   };
   const setAccent     = (v) => { setAccentState(v);     savePref('dc_accent', v);     };
   const setTodayColor = (v) => { setTodayColorState(v); savePref('dc_todayColor', v); };
+  const setLang       = (v) => { setLangState(v);       savePref('dc_lang', v);       };
 
   const [screen, setScreen] = useState('main');
   const [year, setYear]   = useState(TODAY.y);
@@ -282,14 +285,16 @@ export default function App() {
 
   if (!user) {
     return (
-      <div style={{ minHeight: '100dvh', background: appBg, display: 'flex', justifyContent: 'center' }}>
-        <div style={{ width: '100%', maxWidth: 430, minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
-          <Onboarding
-            theme={theme} fontStack={fontStack}
-            fontMono={`'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`}
-          />
+      <LangContext.Provider value={lang}>
+        <div style={{ minHeight: '100dvh', background: appBg, display: 'flex', justifyContent: 'center' }}>
+          <div style={{ width: '100%', maxWidth: 430, minHeight: '100dvh', background: theme.bg, position: 'relative' }}>
+            <Onboarding
+              theme={theme} fontStack={fontStack}
+              fontMono={`'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`}
+            />
+          </div>
         </div>
-      </div>
+      </LangContext.Provider>
     );
   }
 
@@ -303,6 +308,7 @@ export default function App() {
   }
 
   return (
+    <LangContext.Provider value={lang}>
     <div style={{ minHeight: '100dvh', background: appBg, display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: '100%', maxWidth: 430, height: '100dvh', background: theme.bg, position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
         <MainScreen
@@ -330,6 +336,7 @@ export default function App() {
             onReorderTrackers={reorderTrackers}
             onSignOut={handleSignOut}
             userEmail={user.email}
+            lang={lang} onLang={setLang}
           />
         )}
         {editingTrackerId && (
@@ -365,5 +372,6 @@ export default function App() {
         )}
       </div>
     </div>
+    </LangContext.Provider>
   );
 }

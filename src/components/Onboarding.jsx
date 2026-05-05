@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../supabase';
 import { btnPrimary, btnSecondary, linkBtn } from '../styles';
-import { pad2 } from '../utils';
+import { useT } from '../i18n';
 
 export default function Onboarding({ theme, fontStack, fontMono }) {
   const [step, setStep] = useState('auth');
@@ -12,6 +12,7 @@ export default function Onboarding({ theme, fontStack, fontMono }) {
 }
 
 function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
+  const t = useT();
   const [oauthError, setOauthError] = useState('');
 
   const handleGoogle = async () => {
@@ -28,30 +29,30 @@ function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
       <div style={{ flex: 1, padding: '48px 28px 8px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 40 }}>
           <div style={{ fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 30, fontWeight: 500, letterSpacing: '-0.01em', lineHeight: 1 }}>DayCheck</div>
-          <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>·  A LEDGER</div>
+          <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>·  {t.tagline}</div>
         </div>
         <h2 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 28, fontWeight: 500, lineHeight: 1.1, letterSpacing: '-0.015em' }}>
-          {mode === 'signin' ? 'Pick up where you left off.' : 'Start your ledger.'}
+          {mode === 'signin' ? t.signInTitle : t.registerTitle}
         </h2>
         <p style={{ marginTop: 14, marginBottom: 28, fontSize: 13, lineHeight: 1.5, color: theme.dim }}>
-          {mode === 'signin' ? 'Sign in to keep your pages in sync across devices.' : 'Create an account to save your trackers and history.'}
+          {mode === 'signin' ? t.signInSubtitle : t.registerSubtitle}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <ProviderBtn theme={theme} onClick={handleGoogle} icon={<GoogleGlyph />} label="Continue with Google" />
+          <ProviderBtn theme={theme} onClick={handleGoogle} icon={<GoogleGlyph />} label={t.continueGoogle} />
           {oauthError && <div style={{ fontSize: 12, color: '#c0392b', lineHeight: 1.4 }}>{oauthError}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '2px 0' }}>
             <div style={{ flex: 1, height: 1, background: theme.rule }} />
-            <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>OR</div>
+            <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>{t.or}</div>
             <div style={{ flex: 1, height: 1, background: theme.rule }} />
           </div>
-          <ProviderBtn theme={theme} onClick={onContinueEmail} icon={<MailGlyph />} label={mode === 'signin' ? 'Continue with email' : 'Sign up with email'} />
+          <ProviderBtn theme={theme} onClick={onContinueEmail} icon={<MailGlyph />} label={mode === 'signin' ? t.continueEmail : t.signUpEmail} />
         </div>
       </div>
       <div style={{ padding: '14px 22px 36px', borderTop: `1px solid ${theme.rule}`, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, fontSize: 12, color: theme.dim }}>
         {mode === 'signin' ? (
-          <><span>New here?</span><button onClick={() => setMode('register')} style={linkBtn(theme)}>Create an account</button></>
+          <><span>{t.newHere}</span><button onClick={() => setMode('register')} style={linkBtn(theme)}>{t.createAccountLink}</button></>
         ) : (
-          <><span>Already have one?</span><button onClick={() => setMode('signin')} style={linkBtn(theme)}>Sign in</button></>
+          <><span>{t.alreadyHaveOne}</span><button onClick={() => setMode('signin')} style={linkBtn(theme)}>{t.signInLink}</button></>
         )}
       </div>
     </div>
@@ -59,6 +60,7 @@ function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
 }
 
 function EmailScreen({ theme, fontStack, mode, onBack }) {
+  const t = useT();
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const [error, setError] = useState('');
@@ -75,7 +77,7 @@ function EmailScreen({ theme, fontStack, mode, onBack }) {
     const { error: err } = await fn;
     setLoading(false);
     if (err) { setError(err.message); return; }
-    if (mode === 'register') setError('Check your email to confirm your account.');
+    if (mode === 'register') setError(t.checkEmailNote);
     // On sign-in success, onAuthStateChange in App fires and takes over
   };
 
@@ -85,22 +87,22 @@ function EmailScreen({ theme, fontStack, mode, onBack }) {
         <button onClick={onBack} aria-label="Back" style={{ width: 32, height: 32, border: `1px solid ${theme.rule}`, background: 'transparent', color: theme.text, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
         </button>
-        <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>{mode === 'signin' ? 'SIGN IN' : 'REGISTER'} · EMAIL</div>
+        <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>{mode === 'signin' ? t.signInHeader : t.registerHeader}</div>
       </div>
       <div style={{ flex: 1, padding: '20px 28px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
-        <h2 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 26, fontWeight: 500, lineHeight: 1.15, letterSpacing: '-0.015em' }}>{mode === 'signin' ? 'Welcome back.' : 'A few details.'}</h2>
+        <h2 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 26, fontWeight: 500, lineHeight: 1.15, letterSpacing: '-0.015em' }}>{mode === 'signin' ? t.welcomeBack : t.aFewDetails}</h2>
         <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <EmailField theme={theme} label="EMAIL" value={email} onChange={setEmail} type="email" placeholder="you@example.com" />
-          <EmailField theme={theme} label="PASSWORD" value={pwd} onChange={setPwd} type="password" placeholder={mode === 'register' ? '6+ characters' : '••••••••'} />
+          <EmailField theme={theme} label={t.emailField} value={email} onChange={setEmail} type="email" placeholder={t.emailPlaceholder} />
+          <EmailField theme={theme} label={t.passwordField} value={pwd} onChange={setPwd} type="password" placeholder={mode === 'register' ? t.passwordPlaceholder : '••••••••'} />
         </div>
         {error && (
-          <div style={{ marginTop: 14, fontSize: 12, color: error.startsWith('Check') ? theme.dim : '#c0392b', lineHeight: 1.4 }}>{error}</div>
+          <div style={{ marginTop: 14, fontSize: 12, color: error === t.checkEmailNote ? theme.dim : '#c0392b', lineHeight: 1.4 }}>{error}</div>
         )}
       </div>
       <div style={{ padding: '12px 22px 36px', borderTop: `1px solid ${theme.rule}`, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <div style={{ flex: 1, fontSize: 11, color: theme.dim }}>{mode === 'register' ? 'By continuing, you agree to the terms.' : ''}</div>
+        <div style={{ flex: 1, fontSize: 11, color: theme.dim }}>{mode === 'register' ? t.termsNote : ''}</div>
         <button onClick={submit} disabled={!valid || loading} style={{ ...btnPrimary(theme), opacity: valid && !loading ? 1 : 0.4, cursor: valid && !loading ? 'pointer' : 'default' }}>
-          {loading ? '...' : mode === 'signin' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+          {loading ? '...' : mode === 'signin' ? t.signInBtn : t.createAccountBtn}
         </button>
       </div>
     </div>

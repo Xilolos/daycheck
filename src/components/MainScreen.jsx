@@ -1,13 +1,14 @@
 import { useRef, useMemo } from 'react';
-import { MONTHS, DAY_LETTERS } from '../constants';
 import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
+import { useT } from '../i18n';
 
 const DATE_COL_WIDTH = 56;
 
 export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, streaks, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
+  const t = useT();
   const dim = daysInMonth(year, month);
   const todayD = (year === TODAY.y && month === TODAY.m) ? TODAY.d : null;
-  const monthName = MONTHS[month];
+  const monthName = t.months[month];
 
   const colWidth = (tr) => {
     switch (tr.type) {
@@ -59,7 +60,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
               <rect x="4" y="3" width="2" height="6" fill="currentColor"/>
               <rect x="7" y="1" width="2" height="8" fill="currentColor"/>
             </svg>
-            {headerStreak}d
+            {headerStreak}{t.daySuffix}
           </button>
           <HeaderIconBtn theme={theme} onClick={onAddTracker} aria="Add tracker">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -100,8 +101,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
               const isWeekend = wd === 0 || wd === 6;
               const isToday = d === todayD;
               const isFuture = todayD != null && d > todayD;
-              const dayLetter = DAY_LETTERS[wd];
-              const rowFaint = isFuture ? theme.faint : theme.dim;
+                  const rowFaint = isFuture ? theme.faint : theme.dim;
               return (
                 <div key={d} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', borderBottom: `1px solid ${theme.rule}`, fontVariantNumeric: 'tabular-nums', fontSize: 11, background: isWeekend ? theme.stripe : 'transparent' }}>
                   {isToday ? (
@@ -109,7 +109,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                   ) : (
                     <span style={{ color: rowFaint, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
                   )}
-                  <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{dayLetter}</span>
+                  <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{t.dayLetters[wd]}</span>
                 </div>
               );
             })}
@@ -172,7 +172,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           <ToolbarBtn theme={theme} onClick={onPrev} aria="Previous month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>
-          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: todayColor === 'contrast' ? theme.text : (todayColor ?? theme.accent), color: todayColor === 'contrast' ? theme.bg : '#fff', fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
+          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: todayColor === 'contrast' ? theme.text : (todayColor ?? theme.accent), color: todayColor === 'contrast' ? theme.bg : '#fff', fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>{t.today}</button>
           <ToolbarBtn theme={theme} onClick={onNext} aria="Next month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>
