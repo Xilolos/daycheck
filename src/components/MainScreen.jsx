@@ -42,7 +42,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     requestAnimationFrame(() => { syncing.current = false; });
   };
 
-  const trackerColsTemplate = trackers.map(tr => `minmax(${colWidth(tr)}px, 1fr)`).join(' ');
+  const trackerColsTemplate = trackers.map(() => 'minmax(36px, 1fr)').join(' ');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>

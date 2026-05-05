@@ -129,6 +129,7 @@ export default function App() {
     : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#FAFAFA', accent };
 
   useEffect(() => {
+    document.body.style.background = theme.bg;
     const meta = document.querySelector('meta[name="theme-color"]');
     if (meta) meta.setAttribute('content', theme.bg);
   }, [theme.bg]);
@@ -266,7 +267,7 @@ export default function App() {
   }, [trackers, data]);
 
   // ── Render ────────────────────────────────────────────────────────
-  const appBg = dark ? '#0B0B0C' : '#F2F2F4';
+  const appBg = theme.bg;
 
   if (authLoading) {
     return (

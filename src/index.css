@@ -1,7 +1,6 @@
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { margin: 0; padding: 0; height: 100%; }
 body {
-  background: #F2F2F4;
   font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
   -webkit-font-smoothing: antialiased;
 }
