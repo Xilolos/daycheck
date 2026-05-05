@@ -4,7 +4,7 @@ import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
 
 const DATE_COL_WIDTH = 56;
 
-export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, streaks, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
+export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, streaks, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
   const dim = daysInMonth(year, month);
   const todayD = (year === TODAY.y && month === TODAY.m) ? TODAY.d : null;
   const monthName = MONTHS[month];
@@ -18,14 +18,15 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
   };
 
   const headerStreak = useMemo(() => {
-    let best = 0;
-    for (const tr of trackers) {
-      if (tr.type !== 'check') continue;
-      const s = parseInt(streaks[tr.id], 10);
-      if (!isNaN(s) && s > best) best = s;
+    let s = 0;
+    for (let d = TODAY.d; d >= 1; d--) {
+      const dk = dateKey(TODAY.y, TODAY.m, d);
+      const day = data[dk];
+      if (day && Object.values(day).some(v => v !== '' && v != null)) s++;
+      else break;
     }
-    return best;
-  }, [trackers, streaks]);
+    return s;
+  }, [data]);
 
   const headerScrollRef = useRef(null);
   const bodyScrollRef = useRef(null);
@@ -171,7 +172,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           <ToolbarBtn theme={theme} onClick={onPrev} aria="Previous month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>
-          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: theme.text, color: theme.bg, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
+          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: todayColor ?? theme.accent, color: '#fff', fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
           <ToolbarBtn theme={theme} onClick={onNext} aria="Next month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>

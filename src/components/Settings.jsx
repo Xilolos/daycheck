@@ -3,7 +3,7 @@ import { TYPE_META } from '../constants';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 
-export function Settings({ theme, trackers, themeMode, fontMode, accent, onThemeMode, onFontMode, onAccent, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
+export function Settings({ theme, trackers, themeMode, fontMode, accent, todayColor, onThemeMode, onFontMode, onAccent, onTodayColor, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const [open, setOpen] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
 
@@ -57,6 +57,19 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, onTheme
           <div style={{ display: 'flex', gap: 10 }}>
             {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
               <button key={color} onClick={() => onAccent(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: accent === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: accent === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <SectionLabel theme={theme}>TODAY BUTTON</SectionLabel>
+          <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <button
+              onClick={() => onTodayColor(null)}
+              style={{ width: 36, height: 36, borderRadius: '50%', background: accent, border: todayColor === null ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === null ? `2px solid ${accent}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0, fontSize: 9, color: '#fff', letterSpacing: '0.06em', fontWeight: 700 }}
+            >AUTO</button>
+            {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
+              <button key={color} onClick={() => onTodayColor(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: todayColor === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
             ))}
           </div>
         </div>

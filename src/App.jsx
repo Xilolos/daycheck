@@ -23,10 +23,12 @@ export default function App() {
   const [themeMode, setThemeModeState] = useState(() => loadPref('dc_themeMode', 'light'));
   const [fontMode, setFontModeState] = useState(() => loadPref('dc_fontMode', 'mono'));
   const [accent, setAccentState] = useState(() => loadPref('dc_accent', '#E5234B'));
+  const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', null));
 
-  const setThemeMode = (v) => { setThemeModeState(v); savePref('dc_themeMode', v); };
-  const setFontMode  = (v) => { setFontModeState(v);  savePref('dc_fontMode', v);  };
-  const setAccent    = (v) => { setAccentState(v);    savePref('dc_accent', v);    };
+  const setThemeMode  = (v) => { setThemeModeState(v);  savePref('dc_themeMode', v);  };
+  const setFontMode   = (v) => { setFontModeState(v);   savePref('dc_fontMode', v);   };
+  const setAccent     = (v) => { setAccentState(v);     savePref('dc_accent', v);     };
+  const setTodayColor = (v) => { setTodayColorState(v); savePref('dc_todayColor', v); };
 
   const [screen, setScreen] = useState('main');
   const [year, setYear]   = useState(TODAY.y);
@@ -307,7 +309,7 @@ export default function App() {
             theme={theme} fontStack={fontStack}
             year={year} month={month}
             trackers={trackers} data={data}
-            totals={totals} streaks={streaks}
+            totals={totals} streaks={streaks} todayColor={todayColor}
             onPrev={() => stepMonth(-1)} onNext={() => stepMonth(1)} onToday={goToday}
             onAddTracker={() => setEditingTrackerId('new')}
             onOpenSettings={() => setScreen('settings')}
@@ -319,8 +321,8 @@ export default function App() {
         {screen === 'settings' && (
           <Settings
             theme={theme} trackers={trackers}
-            themeMode={themeMode} fontMode={fontMode} accent={accent}
-            onThemeMode={setThemeMode} onFontMode={setFontMode} onAccent={setAccent}
+            themeMode={themeMode} fontMode={fontMode} accent={accent} todayColor={todayColor}
+            onThemeMode={setThemeMode} onFontMode={setFontMode} onAccent={setAccent} onTodayColor={setTodayColor}
             onBack={() => setScreen('main')}
             onEditTracker={(id) => setEditingTrackerId(id)}
             onAddTracker={() => setEditingTrackerId('new')}
