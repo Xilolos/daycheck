@@ -22,7 +22,7 @@ export default function App() {
   const [dataLoading, setDataLoading] = useState(false);
 
   const [themeMode, setThemeModeState]   = useState(() => loadPref('dc_themeMode', 'light'));
-  const [accent, setAccentState]         = useState(() => loadPref('dc_accent', '#E5234B'));
+  const [accent, setAccentState]         = useState(() => loadPref('dc_accent', '#E02828'));
   const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', 'contrast'));
   const [lang, setLangState]             = useState(() => loadPref('dc_lang', 'en'));
   const timeFormat = '24h';

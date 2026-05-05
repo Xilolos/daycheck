@@ -67,7 +67,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
         <div>
           <SectionLabel theme={theme}>{t.accentColor}</SectionLabel>
           <div style={{ display: 'flex', gap: 10 }}>
-            {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
+            {['#E02828', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
               <button key={color} onClick={() => onAccent(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: accent === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: accent === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
             ))}
           </div>
@@ -80,7 +80,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
               onClick={() => onTodayColor('contrast')}
               style={{ width: 36, height: 36, borderRadius: '50%', background: theme.text, border: todayColor === 'contrast' ? `3px solid ${theme.accent}` : '3px solid transparent', outline: todayColor === 'contrast' ? `2px solid ${theme.text}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
             />
-            {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
+            {['#E02828', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
               <button key={color} onClick={() => onTodayColor(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: todayColor === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
             ))}
           </div>
