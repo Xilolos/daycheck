@@ -282,8 +282,7 @@ export default function App() {
   return (
     <div style={{ minHeight: '100dvh', background: appBg, display: 'flex', justifyContent: 'center' }}>
       <div style={{ width: '100%', maxWidth: 430, height: '100dvh', background: theme.bg, position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-        {screen === 'main' && (
-          <MainScreen
+        <MainScreen
             theme={theme} fontStack={fontStack}
             year={year} month={month}
             trackers={trackers} data={data}
@@ -296,7 +295,6 @@ export default function App() {
             onColumnLongPress={(id) => setEditingTrackerId(id)}
             onOpenStats={() => setStatsOpen(true)}
           />
-        )}
         {screen === 'settings' && (
           <Settings
             theme={theme} trackers={trackers}
