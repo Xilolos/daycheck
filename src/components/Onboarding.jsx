@@ -12,6 +12,17 @@ export default function Onboarding({ theme, fontStack, fontMono }) {
 }
 
 function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
+  const [oauthError, setOauthError] = useState('');
+
+  const handleGoogle = async () => {
+    setOauthError('');
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.origin },
+    });
+    if (error) setOauthError(error.message);
+  };
+
   return (
     <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', fontFamily: fontStack, boxSizing: 'border-box' }}>
       <div style={{ flex: 1, padding: '48px 28px 8px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
@@ -26,7 +37,8 @@ function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
           {mode === 'signin' ? 'Sign in to keep your pages in sync across devices.' : 'Create an account to save your trackers and history.'}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <ProviderBtn theme={theme} onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })} icon={<GoogleGlyph />} label="Continue with Google" />
+          <ProviderBtn theme={theme} onClick={handleGoogle} icon={<GoogleGlyph />} label="Continue with Google" />
+          {oauthError && <div style={{ fontSize: 12, color: '#c0392b', lineHeight: 1.4 }}>{oauthError}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '2px 0' }}>
             <div style={{ flex: 1, height: 1, background: theme.rule }} />
             <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>OR</div>
