@@ -1,22 +1,14 @@
-import { useRef, useMemo } from 'react';
+import { useMemo } from 'react';
 import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
 import { useT } from '../i18n';
 
 const DATE_COL_WIDTH = 56;
 
-export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, streaks, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
+export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
   const t = useT();
   const dim = daysInMonth(year, month);
   const todayD = (year === TODAY.y && month === TODAY.m) ? TODAY.d : null;
   const monthName = t.months[month];
-
-  const colWidth = (tr) => {
-    switch (tr.type) {
-      case 'time': return 64; case 'check': return 44; case 'weight': return 64;
-      case 'counter': return 40; case 'distance': return 60; case 'duration': return 60;
-      case 'mood': return 40; default: return 56;
-    }
-  };
 
   const headerStreak = useMemo(() => {
     let s = 0;
@@ -29,25 +21,12 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     return s;
   }, [data]);
 
-  const headerScrollRef = useRef(null);
-  const bodyScrollRef = useRef(null);
-  const totalsScrollRef = useRef(null);
-  const syncing = useRef(false);
-
-  const onAnyHScroll = (srcRef) => (e) => {
-    if (syncing.current) return;
-    syncing.current = true;
-    const left = e.target.scrollLeft;
-    [headerScrollRef, bodyScrollRef, totalsScrollRef].forEach(r => {
-      if (r.current && r !== srcRef) r.current.scrollLeft = left;
-    });
-    requestAnimationFrame(() => { syncing.current = false; });
-  };
-
   const trackerColsTemplate = trackers.map(() => 'minmax(36px, 1fr)').join(' ');
+  const minContentWidth = DATE_COL_WIDTH + trackers.length * 36;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
+
       {/* Header */}
       <div style={{ padding: '14px 18px 14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
         <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 30, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1 }}>
@@ -77,54 +56,47 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
         </div>
       </div>
 
-      {/* Column headers */}
-      <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, alignItems: 'end', padding: '6px 0 8px 0', borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim, flexShrink: 0 }}>
-        <div style={{ paddingLeft: 18 }} />
-        <div ref={headerScrollRef} onScroll={onAnyHScroll(headerScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, minWidth: '100%', width: 'max-content' }}>
-            {trackers.map(tr => (
-              <div key={tr.id} onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }} onClick={() => onColumnLongPress(tr.id)} style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-                {tr.name}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      {/* Single horizontally-scrollable area: column headers + rows + totals */}
+      <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: minContentWidth }}>
 
-      {/* Grid body */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
-        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr` }}>
-          {/* Sticky date column */}
-          <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: 14, borderRight: `1px solid ${theme.rule}`, overflowY: 'hidden' }}>
+          {/* Column header row */}
+          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8, paddingTop: 6, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim, flexShrink: 0 }}>
+            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg }} />
+            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate }}>
+              {trackers.map(tr => (
+                <div key={tr.id}
+                  onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
+                  onClick={() => onColumnLongPress(tr.id)}
+                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {tr.name}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Data rows */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
             {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
               const wd = new Date(year, month, d).getDay();
               const isWeekend = wd === 0 || wd === 6;
               const isToday = d === todayD;
               const isFuture = todayD != null && d > todayD;
-                  const rowFaint = isFuture ? theme.faint : theme.dim;
+              const dKey = dateKey(year, month, d);
+              const rowBg = isWeekend ? theme.stripe : theme.bg;
               return (
-                <div key={d} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', borderBottom: `1px solid ${theme.rule}`, fontVariantNumeric: 'tabular-nums', fontSize: 11, background: isWeekend ? theme.stripe : 'transparent' }}>
-                  {isToday ? (
-                    <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(d)}</span>
-                  ) : (
-                    <span style={{ color: rowFaint, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
-                  )}
-                  <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{t.dayLetters[wd]}</span>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Scrollable tracker columns */}
-          <div ref={bodyScrollRef} onScroll={onAnyHScroll(bodyScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: '100%', width: 'max-content' }}>
-              {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
-                const wd = new Date(year, month, d).getDay();
-                const isWeekend = wd === 0 || wd === 6;
-                const dKey = dateKey(year, month, d);
-                const isFuture = todayD != null && d > todayD;
-                return (
-                  <div key={d} style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, width: '100%', flex: 1, minHeight: 0, borderBottom: `1px solid ${theme.rule}`, color: isFuture ? theme.faint : theme.text, fontSize: 11, letterSpacing: '0.01em', background: isWeekend ? theme.stripe : 'transparent' }}>
+                <div key={d} style={{ flex: 1, minHeight: 0, display: 'flex', borderBottom: `1px solid ${theme.rule}`, background: rowBg }}>
+                  {/* Sticky date cell */}
+                  <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 1, background: rowBg, borderRight: `1px solid ${theme.rule}`, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', paddingLeft: 14, fontVariantNumeric: 'tabular-nums', fontSize: 11 }}>
+                    {isToday ? (
+                      <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(d)}</span>
+                    ) : (
+                      <span style={{ color: isFuture ? theme.faint : theme.dim, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
+                    )}
+                    <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{t.dayLetters[wd]}</span>
+                  </div>
+                  {/* Tracker cells */}
+                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate, fontSize: 11, letterSpacing: '0.01em' }}>
                     {trackers.map(tr => {
                       const raw = data[dKey]?.[tr.id];
                       const display = displayValue(tr, raw);
@@ -139,23 +111,21 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                           onMouseDown={() => startLongPress(tr.id, dKey)}
                           onMouseUp={cancelLongPress}
                           onMouseLeave={cancelLongPress}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', color: empty ? theme.faint : (isFuture ? theme.faint : theme.text), fontVariantNumeric: 'tabular-nums', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', color: empty || isFuture ? theme.faint : theme.text, fontVariantNumeric: 'tabular-nums', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
                           {empty ? '·' : display}
                         </div>
                       );
                     })}
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
-        </div>
 
-        {/* Totals row */}
-        <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, borderTop: `2px solid ${theme.text}`, flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: 14, height: 26, fontSize: 11, color: theme.text, fontWeight: 600, borderRight: `1px solid ${theme.rule}` }}>Σ</div>
-          <div ref={totalsScrollRef} onScroll={onAnyHScroll(totalsScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, minWidth: '100%', width: 'max-content', height: 26, alignItems: 'center', fontSize: 10 }}>
+          {/* Totals row */}
+          <div style={{ display: 'flex', flexShrink: 0, borderTop: `2px solid ${theme.text}`, height: 26 }}>
+            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: `1px solid ${theme.rule}`, fontSize: 11, fontWeight: 600, color: theme.text }}>Σ</div>
+            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'center', fontSize: 10 }}>
               {trackers.map(tr => (
                 <div key={tr.id} style={{ textAlign: 'center', padding: '0 4px', color: theme.text, fontVariantNumeric: 'tabular-nums', fontWeight: 500, whiteSpace: 'nowrap' }}>
                   {totals[tr.id] || '·'}
@@ -163,6 +133,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
               ))}
             </div>
           </div>
+
         </div>
       </div>
 

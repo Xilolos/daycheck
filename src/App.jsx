@@ -21,19 +21,19 @@ export default function App() {
   const [authLoading, setAuthLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false);
 
-  const [themeMode, setThemeModeState] = useState(() => loadPref('dc_themeMode', 'light'));
-  const [fontMode, setFontModeState] = useState(() => loadPref('dc_fontMode', 'mono'));
-  const [accent, setAccentState] = useState(() => loadPref('dc_accent', '#E5234B'));
-  const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', null));
+  const [themeMode, setThemeModeState]   = useState(() => loadPref('dc_themeMode', 'light'));
+  const [accent, setAccentState]         = useState(() => loadPref('dc_accent', '#E5234B'));
+  const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', 'contrast'));
   const [lang, setLangState]             = useState(() => loadPref('dc_lang', 'en'));
   const [timeFormat, setTimeFormatState] = useState(() => loadPref('dc_timeFormat', '12h'));
+  const [amoled, setAmoledState]         = useState(() => loadPref('dc_amoled', false));
 
-  const setThemeMode  = (v) => { setThemeModeState(v);     savePref('dc_themeMode', v);    };
-  const setFontMode   = (v) => { setFontModeState(v);      savePref('dc_fontMode', v);     };
-  const setAccent     = (v) => { setAccentState(v);        savePref('dc_accent', v);       };
-  const setTodayColor = (v) => { setTodayColorState(v);   savePref('dc_todayColor', v);   };
-  const setLang       = (v) => { setLangState(v);          savePref('dc_lang', v);         };
-  const setTimeFormat = (v) => { setTimeFormatState(v);    savePref('dc_timeFormat', v);   };
+  const setThemeMode  = (v) => { setThemeModeState(v);    savePref('dc_themeMode', v);   };
+  const setAccent     = (v) => { setAccentState(v);       savePref('dc_accent', v);      };
+  const setTodayColor = (v) => { setTodayColorState(v);  savePref('dc_todayColor', v);  };
+  const setLang       = (v) => { setLangState(v);         savePref('dc_lang', v);        };
+  const setTimeFormat = (v) => { setTimeFormatState(v);  savePref('dc_timeFormat', v);  };
+  const setAmoled     = (v) => { setAmoledState(v);       savePref('dc_amoled', v);      };
 
   const [screen, setScreen] = useState('main');
   const [year, setYear]   = useState(TODAY.y);
@@ -132,8 +132,10 @@ export default function App() {
   const dark = themeMode === 'dark' || (themeMode === 'system' && systemDark);
 
   const theme = dark
-    ? { bg: '#0B0B0C', text: '#F5F5F5', dim: '#8A8A8E', faint: '#3A3A3D', rule: '#1F1F22', stripe: '#0E0E10', accent }
-    : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#FAFAFA', accent };
+    ? (amoled
+      ? { bg: '#000000', text: '#F5F5F5', dim: '#8A8A8E', faint: '#2A2A2D', rule: '#111112', stripe: '#0D0D10', accent }
+      : { bg: '#0B0B0C', text: '#F5F5F5', dim: '#8A8A8E', faint: '#3A3A3D', rule: '#1F1F22', stripe: '#141418', accent })
+    : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#EFEFF2', accent };
 
   useEffect(() => {
     document.body.style.background = theme.bg;
@@ -141,9 +143,7 @@ export default function App() {
     if (meta) meta.setAttribute('content', theme.bg);
   }, [theme.bg]);
 
-  const fontStack = fontMode === 'mono'
-    ? `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`
-    : `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+  const fontStack = `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`;
 
   // ── Data mutations ───────────────────────────────────────────────
   const setValue = useCallback(async (dKey, trackerId, value) => {
@@ -329,8 +329,9 @@ export default function App() {
         {screen === 'settings' && (
           <Settings
             theme={theme} trackers={trackers}
-            themeMode={themeMode} fontMode={fontMode} accent={accent} todayColor={todayColor}
-            onThemeMode={setThemeMode} onFontMode={setFontMode} onAccent={setAccent} onTodayColor={setTodayColor}
+            themeMode={themeMode} accent={accent} todayColor={todayColor}
+            amoled={amoled} onAmoled={setAmoled}
+            onThemeMode={setThemeMode} onAccent={setAccent} onTodayColor={setTodayColor}
             onBack={() => setScreen('main')}
             onEditTracker={(id) => setEditingTrackerId(id)}
             onAddTracker={() => setEditingTrackerId('new')}

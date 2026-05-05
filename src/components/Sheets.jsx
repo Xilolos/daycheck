@@ -53,26 +53,26 @@ function StatsContent({ theme, stats, bestCurrent, onClose }) {
     <div style={{ padding: '8px 22px 22px' }}>
       <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 4 }}>{t.statsTitle}</div>
       <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 26, fontWeight: 500, marginBottom: 18 }}>{TODAY.y}</div>
-      <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, padding: '14px 16px', marginBottom: 18, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <div>
-          <div style={{ fontSize: 9, letterSpacing: '0.2em', color: theme.dim }}>{t.longestStreak}</div>
+      <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, padding: '14px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ minWidth: 0 }}>
+          <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim }}>{t.longestStreak}</div>
           <div style={{ fontSize: 11, color: theme.dim, marginTop: 4 }}>{t.acrossAllChecks}</div>
         </div>
-        <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 44, fontWeight: 500, color: theme.text, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+        <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 44, fontWeight: 500, color: theme.text, fontVariantNumeric: 'tabular-nums', lineHeight: 1, flexShrink: 0 }}>
           {bestCurrent}<span style={{ fontSize: 18, color: theme.dim, marginLeft: 4 }}>{t.daySuffix}</span>
         </div>
       </div>
-      <div style={{ fontSize: 9, letterSpacing: '0.2em', color: theme.dim, marginBottom: 8 }}>{t.byTracker}</div>
+      <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim, marginBottom: 8 }}>{t.byTracker}</div>
       <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px', fontSize: 9, letterSpacing: '0.16em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
           <div></div>
           <div style={{ textAlign: 'right' }}>{t.colLog}</div>
           <div style={{ textAlign: 'right' }}>{t.colBest}</div>
           <div style={{ textAlign: 'right' }}>{t.colPct}</div>
         </div>
         {stats.map(({ tr, filled, longest, pct }, i) => (
-          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
-            <div style={{ letterSpacing: '0.06em' }}>{tr.name}</div>
+          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
+            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
             <div style={{ textAlign: 'right' }}>{tr.type === 'check' ? `${longest}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'right' }}>{pct}%</div>

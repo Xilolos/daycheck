@@ -3,7 +3,7 @@ import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 
-export function Settings({ theme, trackers, themeMode, fontMode, accent, todayColor, lang, timeFormat, onThemeMode, onFontMode, onAccent, onTodayColor, onLang, onTimeFormat, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
+export function Settings({ theme, trackers, themeMode, accent, todayColor, amoled, lang, timeFormat, onThemeMode, onAccent, onTodayColor, onAmoled, onLang, onTimeFormat, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
@@ -12,6 +12,8 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, todayCo
     setOpen(false);
     setTimeout(onBack, 360);
   };
+
+  const darkActive = themeMode === 'dark' || themeMode === 'system';
 
   return (
     <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box', transform: open ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)', position: 'absolute', inset: 0, zIndex: 10 }}>
@@ -65,22 +67,15 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, todayCo
               }}>{t[opt]}</button>
             ))}
           </div>
-        </div>
-
-        <div>
-          <SectionLabel theme={theme}>{t.typeface}</SectionLabel>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
-            {['mono', 'sans'].map(opt => (
-              <button key={opt} onClick={() => onFontMode(opt)} style={{
-                padding: '10px 0', borderRadius: 6, cursor: 'pointer',
-                border: `1px solid ${fontMode === opt ? theme.text : theme.rule}`,
-                background: fontMode === opt ? theme.text : 'transparent',
-                color: fontMode === opt ? theme.bg : theme.text,
-                fontFamily: opt === 'mono' ? `'JetBrains Mono', monospace` : `'Inter', sans-serif`,
-                fontSize: 11, letterSpacing: opt === 'mono' ? '0.04em' : '0.02em',
-              }}>{opt === 'mono' ? t.mono : t.sans}</button>
-            ))}
-          </div>
+          {darkActive && (
+            <button onClick={() => onAmoled(!amoled)} style={{
+              marginTop: 6, width: '100%', padding: '10px 0', borderRadius: 6, cursor: 'pointer',
+              border: `1px solid ${amoled ? theme.text : theme.rule}`,
+              background: amoled ? theme.text : 'transparent',
+              color: amoled ? theme.bg : theme.text,
+              fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
+            }}>{t.amoled}</button>
+          )}
         </div>
 
         <div>
@@ -95,10 +90,6 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, todayCo
         <div>
           <SectionLabel theme={theme}>{t.todayButton}</SectionLabel>
           <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-            <button
-              onClick={() => onTodayColor(null)}
-              style={{ width: 36, height: 36, borderRadius: '50%', background: accent, border: todayColor === null ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === null ? `2px solid ${accent}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0, fontSize: 9, color: '#fff', letterSpacing: '0.06em', fontWeight: 700 }}
-            >{t.auto}</button>
             <button
               onClick={() => onTodayColor('contrast')}
               style={{ width: 36, height: 36, borderRadius: '50%', background: theme.text, border: todayColor === 'contrast' ? `3px solid ${theme.accent}` : '3px solid transparent', outline: todayColor === 'contrast' ? `2px solid ${theme.text}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
@@ -165,18 +156,15 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
     return rows.length - 1;
   };
 
-  // Touch drag
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
-
     const onMove = (e) => {
       if (!state.current.active) return;
       e.preventDefault();
       const idx = getRowIdx(e.touches[0].clientY);
       if (idx !== null) { latestOver.current = idx; setOverIdx(idx); }
     };
-
     const onEnd = () => {
       if (!state.current.active) return;
       commit(state.current.from, latestOver.current);
@@ -185,11 +173,10 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
       setDragIdx(null);
       setOverIdx(null);
     };
-
     el.addEventListener('touchmove', onMove, { passive: false });
     el.addEventListener('touchend', onEnd);
     return () => { el.removeEventListener('touchmove', onMove); el.removeEventListener('touchend', onEnd); };
-  }, []);  // refs keep everything current
+  }, []);
 
   const onHandleTouchStart = (e, i) => {
     e.stopPropagation();
@@ -199,7 +186,6 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
     setOverIdx(i);
   };
 
-  // Mouse drag (desktop)
   const onDragStart = (e, i) => { e.dataTransfer.effectAllowed = 'move'; setDragIdx(i); };
   const onDragEnter = (i) => setOverIdx(i);
   const onDragEnd = () => { commit(dragIdx, overIdx); setDragIdx(null); setOverIdx(null); };
@@ -226,10 +212,7 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
               transition: 'opacity 0.15s, background 0.12s',
             }}
           >
-            <div
-              onClick={() => onEditTracker(tr.id)}
-              style={{ flex: 1, padding: '12px 14px', cursor: 'pointer' }}
-            >
+            <div onClick={() => onEditTracker(tr.id)} style={{ flex: 1, padding: '12px 14px', cursor: 'pointer' }}>
               <div style={{ fontSize: 13, letterSpacing: '0.06em' }}>{tr.name}</div>
               <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em' }}>
                 {t.typeMeta[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}

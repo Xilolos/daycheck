@@ -51,6 +51,7 @@ const TRANSLATIONS = {
     checkEmailNote: 'Check your email to confirm your account.',
     signInBtn: 'SIGN IN', createAccountBtn: 'CREATE ACCOUNT',
     timeFormat: 'TIME FORMAT', time12h: '12H', time24h: '24H',
+    amoled: 'AMOLED',
     typeMeta: {
       time:     { label: 'Time of day',  placeholder: '7:30 AM' },
       check:    { label: 'Yes / No',     placeholder: '×' },
@@ -108,6 +109,7 @@ const TRANSLATIONS = {
     checkEmailNote: 'Ελέγξτε το email σας για επιβεβαίωση.',
     signInBtn: 'ΣΥΝΔΕΣΗ', createAccountBtn: 'ΔΗΜΙΟΥΡΓΙΑ',
     timeFormat: 'ΜΟΡΦΗ ΩΡΑΣ', time12h: '12Ω', time24h: '24Ω',
+    amoled: 'AMOLED',
     typeMeta: {
       time:     { label: 'Ώρα',       placeholder: '7:30 π.μ.' },
       check:    { label: 'Ναι / Όχι', placeholder: '×' },
