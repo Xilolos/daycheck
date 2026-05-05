@@ -26,7 +26,7 @@ function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail }) {
           {mode === 'signin' ? 'Sign in to keep your pages in sync across devices.' : 'Create an account to save your trackers and history.'}
         </p>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <ProviderBtn theme={theme} onClick={() => supabase.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } })} icon={<GoogleGlyph />} label="Continue with Google" />
+          <ProviderBtn theme={theme} onClick={() => supabase.auth.signInWithOAuth({ provider: 'google' })} icon={<GoogleGlyph />} label="Continue with Google" />
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '2px 0' }}>
             <div style={{ flex: 1, height: 1, background: theme.rule }} />
             <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>OR</div>
