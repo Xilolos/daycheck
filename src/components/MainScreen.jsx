@@ -21,8 +21,8 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     return s;
   }, [data]);
 
-  const trackerColsTemplate = trackers.map(() => 'minmax(36px, 1fr)').join(' ');
-  const minContentWidth = DATE_COL_WIDTH + trackers.length * 36;
+  const trackerColsTemplate = trackers.map(() => 'minmax(64px, 1fr)').join(' ');
+  const minContentWidth = DATE_COL_WIDTH + trackers.length * 64;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
