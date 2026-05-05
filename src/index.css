@@ -13,11 +13,16 @@ body {
 }
 *::-webkit-scrollbar { width: 0; height: 0; }
 
-/* Lock to portrait — show a nudge in landscape */
+/* Counter-rotate in landscape so the app always appears in portrait */
 @media screen and (orientation: landscape) {
-  #root { display: none; }
-  #rotate-msg {
-    display: flex !important;
+  #root {
+    position: fixed;
+    width: 100vh;
+    height: 100vw;
+    top: calc((100vh - 100vw) / 2);
+    left: calc((100vw - 100vh) / 2);
+    transform: rotate(-90deg);
+    transform-origin: center center;
+    overflow: hidden;
   }
 }
-#rotate-msg { display: none; }
