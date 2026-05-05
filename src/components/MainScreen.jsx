@@ -12,15 +12,22 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
   const todayD = (year === TODAY.y && month === TODAY.m) ? TODAY.d : null;
   const monthName = t.months[month];
 
-  const headerStreak = useMemo(() => {
-    let s = 0;
-    for (let d = TODAY.d; d >= 1; d--) {
-      const dk = dateKey(TODAY.y, TODAY.m, d);
+  const { headerStreak, streakExtendedToday } = useMemo(() => {
+    const isFilled = (dk) => {
       const day = data[dk];
-      if (day && Object.values(day).some(v => v !== '' && v != null)) s++;
+      return !!(day && Object.values(day).some(v => v !== '' && v != null));
+    };
+    const todayKey = dateKey(TODAY.y, TODAY.m, TODAY.d);
+    const extendedToday = isFilled(todayKey);
+    // If today is already filled, count from today; otherwise show yesterday's streak
+    // so the number stays visible until you do today's entry (Duolingo-style)
+    const startD = extendedToday ? TODAY.d : TODAY.d - 1;
+    let s = 0;
+    for (let d = startD; d >= 1; d--) {
+      if (isFilled(dateKey(TODAY.y, TODAY.m, d))) s++;
       else break;
     }
-    return s;
+    return { headerStreak: s, streakExtendedToday: extendedToday };
   }, [data]);
 
   const COL_MIN = 40;
@@ -36,7 +43,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           {monthName}{' '}<span style={{ color: theme.dim, fontWeight: 300 }}>{year}</span>
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-          <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: 'transparent', border: `1px solid ${theme.rule}`, color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+          <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: streakExtendedToday ? theme.accent : 'transparent', border: `1px solid ${streakExtendedToday ? theme.accent : theme.rule}`, color: streakExtendedToday ? '#fff' : theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <rect x="1" y="6" width="2" height="3" fill="currentColor"/>
               <rect x="4" y="3" width="2" height="6" fill="currentColor"/>
