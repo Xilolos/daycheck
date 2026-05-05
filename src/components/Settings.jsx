@@ -7,10 +7,15 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, onTheme
   const [open, setOpen] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
 
+  const handleBack = () => {
+    setOpen(false);
+    setTimeout(onBack, 360);
+  };
+
   return (
     <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box', transform: open ? 'translateX(0)' : 'translateX(100%)', transition: 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)', position: 'absolute', inset: 0, zIndex: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 22px', flexShrink: 0 }}>
-        <button onClick={onBack} style={{ background: 'none', border: 'none', color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', cursor: 'pointer', padding: 0 }}>← BACK</button>
+        <button onClick={handleBack} style={{ background: 'none', border: 'none', color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', cursor: 'pointer', padding: 0 }}>← BACK</button>
         <h2 style={{ margin: 0, fontFamily: `'Fraunces', serif`, fontSize: 22, fontWeight: 500 }}>Settings</h2>
         <span style={{ width: 50 }} />
       </div>
