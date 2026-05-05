@@ -8,6 +8,6 @@
   "theme_color": "#ffffff",
   "orientation": "portrait",
   "icons": [
-    { "src": "/logo.jpg", "sizes": "1024x559", "type": "image/jpeg" }
+    { "src": "/logo.jpg", "sizes": "559x559", "type": "image/jpeg" }
   ]
 }
