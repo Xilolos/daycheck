@@ -5,6 +5,14 @@ import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
 
+const MOOD_FACE = {
+  '1': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M7 15Q12 19 17 15" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
+  '2': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8 15Q12 17.5 16 15" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
+  '3': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8.5 14.5H15.5" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round"/></>,
+  '4': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8 14.5Q12 12 16 14.5" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
+  '5': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M7 14Q12 9 17 14" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
+};
+
 export function DayDetailSheet({ theme, dKey, trackers, values, onClose, onSave }) {
   const [draft, setDraft] = useState(() => ({ ...values }));
   const [y, m, d] = dKey.split('-').map(Number);
@@ -114,12 +122,14 @@ function TrackerInput({ theme, tracker, value, onChange }) {
           return (
             <button key={n} onClick={() => onChange(ns)} style={{
               width: 40, height: 40, borderRadius: '50%', cursor: 'pointer', padding: 0, flexShrink: 0,
-              background: MOOD_COLORS[ns],
+              background: MOOD_COLORS[ns], position: 'relative', overflow: 'hidden',
               border: `3px solid ${selected ? theme.text : 'transparent'}`,
-              boxShadow: n === 3 ? `0 0 0 1px ${theme.rule}` : 'none',
+              boxShadow: `0 0 0 1px rgba(0,0,0,0.15)`,
               outline: selected ? `2px solid ${MOOD_COLORS[ns]}` : 'none',
               outlineOffset: 2,
-            }} />
+            }}>
+              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: '10%', pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
+            </button>
           );
         })}
       </div>
@@ -164,10 +174,14 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
           {['1','2','3','4','5'].map(ns => (
             <button key={ns} onClick={() => animateThen(() => onQuickSet(ns))} style={{
               width: 44, height: 44, borderRadius: '50%', cursor: 'pointer', padding: 0, flexShrink: 0,
-              background: MOOD_COLORS[ns],
+              background: MOOD_COLORS[ns], position: 'relative', overflow: 'hidden',
               border: `3px solid ${value === ns ? theme.text : 'transparent'}`,
-              boxShadow: ns === '3' ? `0 0 0 1px ${theme.rule}` : 'none',
-            }} />
+              boxShadow: `0 0 0 1px rgba(0,0,0,0.15)`,
+              outline: value === ns ? `2px solid ${MOOD_COLORS[ns]}` : 'none',
+              outlineOffset: 2,
+            }}>
+              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: '10%', pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
+            </button>
           ))}
         </div>
       ) : quickOptions.length > 0 && (

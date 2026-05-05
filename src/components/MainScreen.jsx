@@ -5,6 +5,7 @@ import { MOOD_COLORS } from '../constants';
 import { Icon } from '../icons';
 
 const DATE_COL_WIDTH = 56;
+const COL_HEADER_H = 28; // paddingTop(6) + icon(14) + paddingBottom(8)
 
 export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
   const t = useT();
@@ -19,8 +20,6 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     };
     const todayKey = dateKey(TODAY.y, TODAY.m, TODAY.d);
     const extendedToday = isFilled(todayKey);
-    // If today is already filled, count from today; otherwise show yesterday's streak
-    // so the number stays visible until you do today's entry (Duolingo-style)
     const startD = extendedToday ? TODAY.d : TODAY.d - 1;
     let s = 0;
     for (let d = startD; d >= 1; d--) {
@@ -32,7 +31,8 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
   const COL_MIN = 40;
   const trackerColsTemplate = trackers.map(() => `minmax(${COL_MIN}px, 1fr)`).join(' ');
-  const minContentWidth = DATE_COL_WIDTH + trackers.length * COL_MIN;
+
+  const days = Array.from({ length: dim }, (_, i) => i + 1);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
@@ -66,14 +66,43 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
         </div>
       </div>
 
-      {/* Single horizontally-scrollable area: column headers + rows + totals */}
-      <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none', overscrollBehavior: 'contain' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: minContentWidth }}>
+      {/* Two-panel table: fixed date column + scrollable tracker area */}
+      <div style={{ flex: 1, minHeight: 0, display: 'flex', overflow: 'hidden' }}>
 
-          {/* Column header row */}
-          <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8, paddingTop: 6, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim, flexShrink: 0 }}>
-            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg, alignSelf: 'stretch' }} />
-            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate }}>
+        {/* Fixed date column */}
+        <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, display: 'flex', flexDirection: 'column', background: theme.bg, zIndex: 2 }}>
+          {/* Header spacer — same height as tracker column header */}
+          <div style={{ height: COL_HEADER_H, flexShrink: 0, borderBottom: `1px solid ${theme.rule}`, borderRight: `1px solid ${theme.rule}` }} />
+          {/* Date rows */}
+          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', borderRight: `1px solid ${theme.rule}`, overflow: 'hidden' }}>
+            {days.map(d => {
+              const wd = new Date(year, month, d).getDay();
+              const isWeekend = wd === 0 || wd === 6;
+              const isToday = d === todayD;
+              const isFuture = todayD != null && d > todayD;
+              const rowBg = isWeekend ? theme.stripe : theme.bg;
+              return (
+                <div key={d} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', paddingLeft: 14, borderBottom: `1px solid ${theme.rule}`, background: rowBg, fontVariantNumeric: 'tabular-nums', fontSize: 11 }}>
+                  {isToday ? (
+                    <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(d)}</span>
+                  ) : (
+                    <span style={{ color: isFuture ? theme.faint : theme.dim, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
+                  )}
+                  <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{t.dayLetters[wd]}</span>
+                </div>
+              );
+            })}
+          </div>
+          {/* Σ cell */}
+          <div style={{ flexShrink: 0, height: 26, borderTop: `2px solid ${theme.text}`, borderRight: `1px solid ${theme.rule}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 600, color: theme.text }} >Σ</div>
+        </div>
+
+        {/* Scrollable tracker area */}
+        <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none', overscrollBehavior: 'contain' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: trackers.length * COL_MIN }}>
+
+            {/* Column headers */}
+            <div style={{ height: COL_HEADER_H, flexShrink: 0, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'flex-end', paddingBottom: 8, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim }}>
               {trackers.map(tr => (
                 <div key={tr.id}
                   onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
@@ -86,30 +115,17 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                 </div>
               ))}
             </div>
-          </div>
 
-          {/* Data rows */}
-          <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
-            {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
-              const wd = new Date(year, month, d).getDay();
-              const isWeekend = wd === 0 || wd === 6;
-              const isToday = d === todayD;
-              const isFuture = todayD != null && d > todayD;
-              const dKey = dateKey(year, month, d);
-              const rowBg = isWeekend ? theme.stripe : theme.bg;
-              return (
-                <div key={d} style={{ flex: 1, minHeight: 0, display: 'flex', borderBottom: `1px solid ${theme.rule}`, background: rowBg }}>
-                  {/* Sticky date cell */}
-                  <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 1, background: rowBg, borderRight: `1px solid ${theme.rule}`, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', paddingLeft: 14, fontVariantNumeric: 'tabular-nums', fontSize: 11 }}>
-                    {isToday ? (
-                      <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(d)}</span>
-                    ) : (
-                      <span style={{ color: isFuture ? theme.faint : theme.dim, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
-                    )}
-                    <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{t.dayLetters[wd]}</span>
-                  </div>
-                  {/* Tracker cells */}
-                  <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate, fontSize: 11, letterSpacing: '0.01em' }}>
+            {/* Data rows */}
+            <div style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              {days.map(d => {
+                const wd = new Date(year, month, d).getDay();
+                const isWeekend = wd === 0 || wd === 6;
+                const isFuture = todayD != null && d > todayD;
+                const dKey = dateKey(year, month, d);
+                const rowBg = isWeekend ? theme.stripe : theme.bg;
+                return (
+                  <div key={d} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: trackerColsTemplate, fontSize: 11, letterSpacing: '0.01em', borderBottom: `1px solid ${theme.rule}`, background: rowBg }}>
                     {trackers.map(tr => {
                       const raw = data[dKey]?.[tr.id];
                       const display = displayValue(tr, raw);
@@ -126,31 +142,29 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                           onMouseLeave={cancelLongPress}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', color: empty || isFuture ? theme.faint : theme.text, fontVariantNumeric: 'tabular-nums', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
                           {tr.type === 'mood' && !empty && !isFuture
-                            ? <div style={{ width: 10, height: 10, borderRadius: '50%', background: MOOD_COLORS[raw] ?? theme.faint, boxShadow: raw === '3' ? `0 0 0 1px ${theme.dim}` : 'none', flexShrink: 0 }} />
+                            ? <div style={{ width: 10, height: 10, borderRadius: '50%', background: MOOD_COLORS[raw] ?? theme.faint, boxShadow: `0 0 0 1px ${theme.dim}`, flexShrink: 0 }} />
                             : (empty ? '·' : display)
                           }
                         </div>
                       );
                     })}
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
 
-          {/* Totals row */}
-          <div style={{ display: 'flex', flexShrink: 0, borderTop: `2px solid ${theme.text}`, height: 26 }}>
-            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRight: `1px solid ${theme.rule}`, fontSize: 11, fontWeight: 600, color: theme.text }}>Σ</div>
-            <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'center', fontSize: 10 }}>
+            {/* Totals row */}
+            <div style={{ flexShrink: 0, height: 26, borderTop: `2px solid ${theme.text}`, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'center', fontSize: 10 }}>
               {trackers.map(tr => (
                 <div key={tr.id} style={{ textAlign: 'center', padding: '0 4px', color: theme.text, fontVariantNumeric: 'tabular-nums', fontWeight: 500, whiteSpace: 'nowrap' }}>
                   {totals[tr.id] || '·'}
                 </div>
               ))}
             </div>
-          </div>
 
+          </div>
         </div>
+
       </div>
 
       {/* Bottom toolbar */}
