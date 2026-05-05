@@ -85,11 +85,6 @@ export default function App() {
   }, [user, loadData]);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setUser(session?.user ?? null);
-      setAuthLoading(false);
-    });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       if (!session) {
@@ -97,7 +92,11 @@ export default function App() {
         setTrackers(DEFAULT_TRACKERS);
         setScreen('main');
       }
+      setAuthLoading(false);
     });
+
+    // Trigger initial session detection (handles ?code= from OAuth redirect too)
+    supabase.auth.getSession();
 
     return () => subscription.unsubscribe();
   }, []);
