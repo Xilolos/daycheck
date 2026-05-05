@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
 import { useT } from '../i18n';
+import { MOOD_COLORS } from '../constants';
 
 const DATE_COL_WIDTH = 56;
 
@@ -69,8 +70,11 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                 <div key={tr.id}
                   onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
                   onClick={() => onColumnLongPress(tr.id)}
-                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                  {tr.name}
+                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {tr.icon
+                    ? <span style={{ fontSize: 16, lineHeight: 1 }}>{tr.icon}</span>
+                    : <span style={{ textTransform: 'uppercase', whiteSpace: 'nowrap', fontSize: 10, letterSpacing: '0.08em' }}>{tr.name}</span>
+                  }
                 </div>
               ))}
             </div>
@@ -113,7 +117,10 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                           onMouseUp={cancelLongPress}
                           onMouseLeave={cancelLongPress}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', color: empty || isFuture ? theme.faint : theme.text, fontVariantNumeric: 'tabular-nums', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
-                          {empty ? '·' : display}
+                          {tr.type === 'mood' && !empty && !isFuture
+                            ? <div style={{ width: 10, height: 10, borderRadius: '50%', background: MOOD_COLORS[raw] ?? theme.faint, boxShadow: raw === '3' ? `0 0 0 1px ${theme.dim}` : 'none', flexShrink: 0 }} />
+                            : (empty ? '·' : display)
+                          }
                         </div>
                       );
                     })}

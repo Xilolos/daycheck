@@ -18,3 +18,11 @@ export const DEFAULT_TRACKERS = [
   { id: 't4', name: 'CAFF',  type: 'counter'  },
   { id: 't5', name: 'RUN',   type: 'distance', unit: 'km' },
 ];
+
+export const MOOD_COLORS = {
+  '1': '#EF4444',
+  '2': '#F97316',
+  '3': '#F0F0F0',
+  '4': '#60A5FA',
+  '5': '#4ADE80',
+};

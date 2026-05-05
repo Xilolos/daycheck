@@ -3,6 +3,16 @@ import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 
+const EMOJI_ICONS = [
+  '🌙','⏰','😴','☀️','⚡','💤','🌅',
+  '🏃','💪','🧘','🚴','🏋️','🏊','🚶',
+  '🍎','🥗','☕','💧','🍷','🥤','🥦',
+  '💊','❤️','🩺','🌡️','🦷','🧴','🫁',
+  '📚','📝','🎯','🧠','🎨','🎵','🎮',
+  '💻','💰','📊','✅','⭐','🔥','🏠',
+  '📱','👥','✈️','🐕','🌱','🐈','🎉',
+];
+
 export function Settings({ theme, trackers, themeMode, accent, todayColor, amoled, lang, onThemeMode, onAccent, onTodayColor, onAmoled, onLang, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -221,7 +231,7 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
   );
 }
 
-export function TrackerEditor({ theme, tracker, onClose, onSave, onDelete }) {
+export function TrackerEditor({ theme, tracker, trackerIcon, onClose, onSave, onDelete }) {
   const isNew = !tracker;
   const [name, setName] = useState(tracker?.name || '');
   const [type, setType] = useState(tracker?.type || 'check');
@@ -242,20 +252,42 @@ export function TrackerEditor({ theme, tracker, onClose, onSave, onDelete }) {
       <TrackerEditorContent
         theme={theme} isNew={isNew} name={name} setName={setName}
         type={type} setType={setType} unit={unit} setUnit={setUnit}
-        types={types} tracker={tracker} onClose={onClose} onSave={onSave} onDelete={onDelete} save={save}
+        types={types} tracker={tracker} trackerIcon={trackerIcon} onClose={onClose} onSave={onSave} onDelete={onDelete} save={save}
       />
     </SheetOverlay>
   );
 }
 
-function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit, setUnit, types, tracker, onClose, onSave, onDelete, save }) {
+function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit, setUnit, types, tracker, trackerIcon, onClose, onSave, onDelete, save }) {
   const t = useT();
   const animateThen = useSheetAnimate();
+  const [iconDraft, setIconDraft] = useState(trackerIcon || null);
   return (
     <div style={{ padding: '8px 22px 18px' }}>
       <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 12 }}>{isNew ? t.newTracker : t.editTracker}</div>
       <EditorField theme={theme} label={t.nameLabel}>
         <input value={name} onChange={(e) => setName(e.target.value.slice(0, 5))} placeholder="e.g. WAKE" style={inputStyle(theme)} />
+      </EditorField>
+      <EditorField theme={theme} label={t.iconLabel}>
+        <div style={{ display: 'flex', gap: 6, marginBottom: 8, alignItems: 'center' }}>
+          <button onClick={() => setIconDraft(null)} style={{
+            height: 32, padding: '0 10px', borderRadius: 6, cursor: 'pointer',
+            fontSize: 10, letterSpacing: '0.1em', fontFamily: 'inherit',
+            border: `1px solid ${!iconDraft ? theme.text : theme.rule}`,
+            background: !iconDraft ? theme.text : 'transparent',
+            color: !iconDraft ? theme.bg : theme.dim,
+          }}>ABC</button>
+          {iconDraft && <span style={{ fontSize: 22, lineHeight: 1 }}>{iconDraft}</span>}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
+          {EMOJI_ICONS.map(emoji => (
+            <button key={emoji} onClick={() => setIconDraft(iconDraft === emoji ? null : emoji)} style={{
+              padding: '5px 0', borderRadius: 6, cursor: 'pointer', fontSize: 16, lineHeight: 1.3,
+              border: `1px solid ${iconDraft === emoji ? theme.text : 'transparent'}`,
+              background: iconDraft === emoji ? theme.faint : 'transparent',
+            }}>{emoji}</button>
+          ))}
+        </div>
       </EditorField>
       <EditorField theme={theme} label={t.typeLabel}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
@@ -280,7 +312,7 @@ function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit
       )}
       <div style={{ marginTop: 18, display: 'flex', gap: 8 }}>
         <button onClick={() => animateThen(onClose)} style={{ ...btnSecondary(theme), flex: 1 }}>{t.cancel}</button>
-        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out)); }} style={{ ...btnPrimary(theme), flex: 1 }}>{t.save}</button>
+        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out, iconDraft)); }} style={{ ...btnPrimary(theme), flex: 1 }}>{t.save}</button>
         {!isNew && (
           <button onClick={() => animateThen(() => onDelete(tracker.id))} style={{ ...btnSecondary(theme), flex: 1, color: theme.accent, borderColor: theme.accent }}>{t.delete}</button>
         )}

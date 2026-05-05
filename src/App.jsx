@@ -27,12 +27,20 @@ export default function App() {
   const [lang, setLangState]             = useState(() => loadPref('dc_lang', 'en'));
   const timeFormat = '24h';
   const [amoled, setAmoledState]         = useState(() => loadPref('dc_amoled', false));
+  const [trackerIcons, setTrackerIconsState] = useState(() => loadPref('dc_tracker_icons', {}));
 
   const setThemeMode  = (v) => { setThemeModeState(v);    savePref('dc_themeMode', v);   };
   const setAccent     = (v) => { setAccentState(v);       savePref('dc_accent', v);      };
   const setTodayColor = (v) => { setTodayColorState(v);  savePref('dc_todayColor', v);  };
   const setLang       = (v) => { setLangState(v);         savePref('dc_lang', v);        };
   const setAmoled     = (v) => { setAmoledState(v);       savePref('dc_amoled', v);      };
+  const setTrackerIcon = (id, icon) => {
+    setTrackerIconsState(prev => {
+      const next = icon ? { ...prev, [id]: icon } : Object.fromEntries(Object.entries(prev).filter(([k]) => k !== id));
+      savePref('dc_tracker_icons', next);
+      return next;
+    });
+  };
 
   const [screen, setScreen] = useState('main');
   const [year, setYear]   = useState(TODAY.y);
@@ -191,6 +199,11 @@ export default function App() {
 
   const removeTracker = useCallback(async (id) => {
     setTrackers(prev => prev.filter(p => p.id !== id));
+    setTrackerIconsState(prev => {
+      const { [id]: _, ...rest } = prev;
+      savePref('dc_tracker_icons', rest);
+      return rest;
+    });
     setData(prev => {
       const out = {};
       for (const k of Object.keys(prev)) { const { [id]: _, ...rest } = prev[k]; out[k] = rest; }
@@ -272,6 +285,11 @@ export default function App() {
     return out;
   }, [trackers, data]);
 
+  const trackersWithIcons = useMemo(
+    () => trackers.map(tr => ({ ...tr, icon: trackerIcons[tr.id] || null })),
+    [trackers, trackerIcons]
+  );
+
   // ── Render ────────────────────────────────────────────────────────
   const appBg = theme.bg;
 
@@ -315,7 +333,7 @@ export default function App() {
         <MainScreen
             theme={theme} fontStack={fontStack}
             year={year} month={month}
-            trackers={trackers} data={data}
+            trackers={trackersWithIcons} data={data}
             totals={totals} streaks={streaks} todayColor={todayColor}
             onPrev={() => stepMonth(-1)} onNext={() => stepMonth(1)} onToday={goToday}
             onAddTracker={() => setEditingTrackerId('new')}
@@ -344,15 +362,16 @@ export default function App() {
         {editingTrackerId && (
           <TrackerEditor
             theme={theme}
-            tracker={editingTrackerId === 'new' ? null : trackers.find(x => x.id === editingTrackerId)}
+            tracker={editingTrackerId === 'new' ? null : trackersWithIcons.find(x => x.id === editingTrackerId)}
+            trackerIcon={trackerIcons[editingTrackerId] || null}
             onClose={() => setEditingTrackerId(null)}
-            onSave={(tr) => { upsertTracker(tr); setEditingTrackerId(null); }}
+            onSave={(tr, icon) => { upsertTracker(tr); setTrackerIcon(tr.id, icon); setEditingTrackerId(null); }}
             onDelete={(id) => { removeTracker(id); setEditingTrackerId(null); }}
           />
         )}
         {editingDay && (
           <DayDetailSheet
-            theme={theme} dKey={editingDay} trackers={trackers}
+            theme={theme} dKey={editingDay} trackers={trackersWithIcons}
             values={data[editingDay] || {}}
             onClose={() => setEditingDay(null)}
             onSave={(values) => { setDayValues(editingDay, values); setEditingDay(null); }}
@@ -361,7 +380,7 @@ export default function App() {
         {longPressTarget && (
           <QuickActionMenu
             theme={theme} target={longPressTarget}
-            tracker={trackers.find(x => x.id === longPressTarget.trackerId)}
+            tracker={trackersWithIcons.find(x => x.id === longPressTarget.trackerId)}
             value={data[longPressTarget.dateKey]?.[longPressTarget.trackerId]}
             onClose={() => setLongPressTarget(null)}
             onClear={() => { setValue(longPressTarget.dateKey, longPressTarget.trackerId, ''); setLongPressTarget(null); }}
@@ -370,7 +389,7 @@ export default function App() {
           />
         )}
         {statsOpen && (
-          <StatsSheet theme={theme} trackers={trackers} data={data} onClose={() => setStatsOpen(false)} />
+          <StatsSheet theme={theme} trackers={trackersWithIcons} data={data} onClose={() => setStatsOpen(false)} />
         )}
       </div>
     </div>

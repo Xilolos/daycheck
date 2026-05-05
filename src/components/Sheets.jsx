@@ -3,6 +3,7 @@ import { pad2, TODAY } from '../utils';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
+import { MOOD_COLORS } from '../constants';
 
 export function DayDetailSheet({ theme, dKey, trackers, values, onClose, onSave }) {
   const [draft, setDraft] = useState(() => ({ ...values }));
@@ -34,7 +35,7 @@ function DayDetailContent({ theme, draft, setField, y, m, d, wd, trackers, onClo
       </div>
       {trackers.map(tr => (
         <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: `1px solid ${theme.rule}` }}>
-          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.name}</div>
+          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.icon ? tr.icon : tr.name}</div>
           <div><TrackerInput theme={theme} tracker={tr} value={draft[tr.id]} onChange={(v) => setField(tr.id, v)} /></div>
         </div>
       ))}
@@ -72,7 +73,7 @@ function StatsContent({ theme, stats, bestCurrent, onClose }) {
         </div>
         {stats.map(({ tr, filled, longest, pct }, i) => (
           <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
-            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
+            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.icon ? `${tr.icon} ${tr.name}` : tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
             <div style={{ textAlign: 'right' }}>{tr.type === 'check' ? `${longest}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'right' }}>{pct}%</div>
@@ -106,16 +107,21 @@ function TrackerInput({ theme, tracker, value, onChange }) {
   }
   if (tracker.type === 'mood') {
     return (
-      <div style={{ display: 'flex', gap: 6 }}>
-        {[1, 2, 3, 4, 5].map(n => (
-          <button key={n} onClick={() => onChange(String(n))} style={{
-            flex: 1, padding: '10px 0', borderRadius: 6,
-            border: `1px solid ${String(n) === v ? theme.text : theme.rule}`,
-            background: String(n) === v ? theme.text : 'transparent',
-            color: String(n) === v ? theme.bg : theme.text,
-            fontFamily: 'inherit', fontSize: 13, cursor: 'pointer',
-          }}>{n}</button>
-        ))}
+      <div style={{ display: 'flex', gap: 8 }}>
+        {[1, 2, 3, 4, 5].map(n => {
+          const ns = String(n);
+          const selected = ns === v;
+          return (
+            <button key={n} onClick={() => onChange(ns)} style={{
+              width: 40, height: 40, borderRadius: '50%', cursor: 'pointer', padding: 0, flexShrink: 0,
+              background: MOOD_COLORS[ns],
+              border: `3px solid ${selected ? theme.text : 'transparent'}`,
+              boxShadow: n === 3 ? `0 0 0 1px ${theme.rule}` : 'none',
+              outline: selected ? `2px solid ${MOOD_COLORS[ns]}` : 'none',
+              outlineOffset: 2,
+            }} />
+          );
+        })}
       </div>
     );
   }
@@ -153,7 +159,18 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
       <div style={{ fontSize: 10, letterSpacing: '0.2em', color: theme.dim, marginBottom: 10 }}>
         {tracker.name} · {target.dateKey}
       </div>
-      {quickOptions.length > 0 && (
+      {tracker.type === 'mood' ? (
+        <div style={{ display: 'flex', gap: 10, marginBottom: 10, justifyContent: 'center' }}>
+          {['1','2','3','4','5'].map(ns => (
+            <button key={ns} onClick={() => animateThen(() => onQuickSet(ns))} style={{
+              width: 44, height: 44, borderRadius: '50%', cursor: 'pointer', padding: 0, flexShrink: 0,
+              background: MOOD_COLORS[ns],
+              border: `3px solid ${value === ns ? theme.text : 'transparent'}`,
+              boxShadow: ns === '3' ? `0 0 0 1px ${theme.rule}` : 'none',
+            }} />
+          ))}
+        </div>
+      ) : quickOptions.length > 0 && (
         <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
           {quickOptions.map(opt => (
             <button key={opt.value} onClick={() => animateThen(() => onQuickSet(opt.value))} style={{
