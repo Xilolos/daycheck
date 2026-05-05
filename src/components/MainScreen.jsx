@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
 import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
+import { Icon } from '../icons';
 
 const DATE_COL_WIDTH = 56;
 
@@ -72,7 +73,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                   onClick={() => onColumnLongPress(tr.id)}
                   style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {tr.icon
-                    ? <span style={{ fontSize: 16, lineHeight: 1 }}>{tr.icon}</span>
+                    ? <Icon id={tr.icon} size={14} />
                     : <span style={{ textTransform: 'uppercase', whiteSpace: 'nowrap', fontSize: 10, letterSpacing: '0.08em' }}>{tr.name}</span>
                   }
                 </div>

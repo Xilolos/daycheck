@@ -266,7 +266,7 @@ export default function App() {
         out[tr.id] = mins.length ? minToTime(Math.round(mins.reduce((a, b) => a + b, 0) / mins.length), timeFormat) : '·';
       } else if (tr.type === 'mood') {
         const nums = vals.map(v => parseFloat(v)).filter(Boolean);
-        out[tr.id] = nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1) : '·';
+        out[tr.id] = nums.length ? `${Math.round(nums.reduce((a, b) => a + b, 0) / nums.length / 5 * 100)}%` : '·';
       } else out[tr.id] = '·';
     }
     return out;

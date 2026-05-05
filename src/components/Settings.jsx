@@ -2,16 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
-
-const EMOJI_ICONS = [
-  '🌙','⏰','😴','☀️','⚡','💤','🌅',
-  '🏃','💪','🧘','🚴','🏋️','🏊','🚶',
-  '🍎','🥗','☕','💧','🍷','🥤','🥦',
-  '💊','❤️','🩺','🌡️','🦷','🧴','🫁',
-  '📚','📝','🎯','🧠','🎨','🎵','🎮',
-  '💻','💰','📊','✅','⭐','🔥','🏠',
-  '📱','👥','✈️','🐕','🌱','🐈','🎉',
-];
+import { Icon, ICON_KEYS } from '../icons';
 
 export function Settings({ theme, trackers, themeMode, accent, todayColor, amoled, lang, onThemeMode, onAccent, onTodayColor, onAmoled, onLang, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();
@@ -276,16 +267,25 @@ function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit
             border: `1px solid ${!iconDraft ? theme.text : theme.rule}`,
             background: !iconDraft ? theme.text : 'transparent',
             color: !iconDraft ? theme.bg : theme.dim,
+            display: 'flex', alignItems: 'center',
           }}>ABC</button>
-          {iconDraft && <span style={{ fontSize: 22, lineHeight: 1 }}>{iconDraft}</span>}
+          {iconDraft && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: 32, height: 32, color: theme.text }}>
+              <Icon id={iconDraft} size={22} />
+            </div>
+          )}
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 3 }}>
-          {EMOJI_ICONS.map(emoji => (
-            <button key={emoji} onClick={() => setIconDraft(iconDraft === emoji ? null : emoji)} style={{
-              padding: '5px 0', borderRadius: 6, cursor: 'pointer', fontSize: 16, lineHeight: 1.3,
-              border: `1px solid ${iconDraft === emoji ? theme.text : 'transparent'}`,
-              background: iconDraft === emoji ? theme.faint : 'transparent',
-            }}>{emoji}</button>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 4 }}>
+          {ICON_KEYS.map(id => (
+            <button key={id} onClick={() => setIconDraft(iconDraft === id ? null : id)} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              padding: '8px 0', borderRadius: 6, cursor: 'pointer',
+              border: `1px solid ${iconDraft === id ? theme.text : 'transparent'}`,
+              background: iconDraft === id ? theme.faint : 'transparent',
+              color: theme.text,
+            }}>
+              <Icon id={id} size={18} />
+            </button>
           ))}
         </div>
       </EditorField>
