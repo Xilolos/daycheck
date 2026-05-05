@@ -21,8 +21,9 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     return s;
   }, [data]);
 
-  const trackerColsTemplate = trackers.map(() => 'minmax(64px, 1fr)').join(' ');
-  const minContentWidth = DATE_COL_WIDTH + trackers.length * 64;
+  const COL_MIN = 40;
+  const trackerColsTemplate = trackers.map(() => `minmax(${COL_MIN}px, 1fr)`).join(' ');
+  const minContentWidth = DATE_COL_WIDTH + trackers.length * COL_MIN;
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
@@ -68,7 +69,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                 <div key={tr.id}
                   onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
                   onClick={() => onColumnLongPress(tr.id)}
-                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', overflow: 'hidden', whiteSpace: 'nowrap' }}>
                   {tr.name}
                 </div>
               ))}
