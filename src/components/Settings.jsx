@@ -3,7 +3,7 @@ import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 
-export function Settings({ theme, trackers, themeMode, fontMode, accent, todayColor, lang, onThemeMode, onFontMode, onAccent, onTodayColor, onLang, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
+export function Settings({ theme, trackers, themeMode, fontMode, accent, todayColor, lang, timeFormat, onThemeMode, onFontMode, onAccent, onTodayColor, onLang, onTimeFormat, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();
   const [open, setOpen] = useState(false);
   useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
@@ -31,6 +31,21 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, todayCo
                 border: `1px solid ${lang === code ? theme.text : theme.rule}`,
                 background: lang === code ? theme.text : 'transparent',
                 color: lang === code ? theme.bg : theme.text,
+                fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
+              }}>{label}</button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <SectionLabel theme={theme}>{t.timeFormat}</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+            {[['12h', t.time12h], ['24h', t.time24h]].map(([val, label]) => (
+              <button key={val} onClick={() => onTimeFormat(val)} style={{
+                padding: '10px 0', borderRadius: 6, cursor: 'pointer',
+                border: `1px solid ${timeFormat === val ? theme.text : theme.rule}`,
+                background: timeFormat === val ? theme.text : 'transparent',
+                color: timeFormat === val ? theme.bg : theme.text,
                 fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
               }}>{label}</button>
             ))}
@@ -295,10 +310,14 @@ function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit
           <input value={unit} placeholder={type === 'weight' ? 'kg' : 'km'} onChange={(e) => setUnit(e.target.value.slice(0, 4))} style={inputStyle(theme)} />
         </EditorField>
       )}
-      <div style={{ display: 'flex', gap: 8, marginTop: 18, justifyContent: 'center' }}>
-        {!isNew && <button onClick={() => animateThen(() => onDelete(tracker.id))} style={{ ...btnSecondary(theme), color: theme.accent, borderColor: theme.accent }}>{t.delete}</button>}
-        <button onClick={() => animateThen(onClose)} style={btnSecondary(theme)}>{t.cancel}</button>
-        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out)); }} style={btnPrimary(theme)}>{t.save}</button>
+      <div style={{ marginTop: 18, display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button onClick={() => animateThen(onClose)} style={btnSecondary(theme)}>{t.cancel}</button>
+          <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out)); }} style={btnPrimary(theme)}>{t.save}</button>
+        </div>
+        {!isNew && (
+          <button onClick={() => animateThen(() => onDelete(tracker.id))} style={{ ...btnSecondary(theme), color: theme.accent, borderColor: theme.accent, width: '100%' }}>{t.delete}</button>
+        )}
       </div>
     </div>
   );

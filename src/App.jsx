@@ -25,13 +25,15 @@ export default function App() {
   const [fontMode, setFontModeState] = useState(() => loadPref('dc_fontMode', 'mono'));
   const [accent, setAccentState] = useState(() => loadPref('dc_accent', '#E5234B'));
   const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', null));
-  const [lang, setLangState] = useState(() => loadPref('dc_lang', 'en'));
+  const [lang, setLangState]             = useState(() => loadPref('dc_lang', 'en'));
+  const [timeFormat, setTimeFormatState] = useState(() => loadPref('dc_timeFormat', '12h'));
 
-  const setThemeMode  = (v) => { setThemeModeState(v);  savePref('dc_themeMode', v);  };
-  const setFontMode   = (v) => { setFontModeState(v);   savePref('dc_fontMode', v);   };
-  const setAccent     = (v) => { setAccentState(v);     savePref('dc_accent', v);     };
-  const setTodayColor = (v) => { setTodayColorState(v); savePref('dc_todayColor', v); };
-  const setLang       = (v) => { setLangState(v);       savePref('dc_lang', v);       };
+  const setThemeMode  = (v) => { setThemeModeState(v);     savePref('dc_themeMode', v);    };
+  const setFontMode   = (v) => { setFontModeState(v);      savePref('dc_fontMode', v);     };
+  const setAccent     = (v) => { setAccentState(v);        savePref('dc_accent', v);       };
+  const setTodayColor = (v) => { setTodayColorState(v);   savePref('dc_todayColor', v);   };
+  const setLang       = (v) => { setLangState(v);          savePref('dc_lang', v);         };
+  const setTimeFormat = (v) => { setTimeFormatState(v);    savePref('dc_timeFormat', v);   };
 
   const [screen, setScreen] = useState('main');
   const [year, setYear]   = useState(TODAY.y);
@@ -249,14 +251,14 @@ export default function App() {
         out[tr.id] = nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1) : '·';
       } else if (tr.type === 'time') {
         const mins = vals.map(parseTimeToMin).filter(x => x != null);
-        out[tr.id] = mins.length ? minToTime(Math.round(mins.reduce((a, b) => a + b, 0) / mins.length)) : '·';
+        out[tr.id] = mins.length ? minToTime(Math.round(mins.reduce((a, b) => a + b, 0) / mins.length), timeFormat) : '·';
       } else if (tr.type === 'mood') {
         const nums = vals.map(v => parseFloat(v)).filter(Boolean);
         out[tr.id] = nums.length ? (nums.reduce((a, b) => a + b, 0) / nums.length).toFixed(1) : '·';
       } else out[tr.id] = '·';
     }
     return out;
-  }, [trackers, data, year, month]);
+  }, [trackers, data, year, month, timeFormat]);
 
   const streaks = useMemo(() => {
     const out = {};
@@ -337,6 +339,7 @@ export default function App() {
             onSignOut={handleSignOut}
             userEmail={user.email}
             lang={lang} onLang={setLang}
+            timeFormat={timeFormat} onTimeFormat={setTimeFormat}
           />
         )}
         {editingTrackerId && (

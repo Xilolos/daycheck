@@ -29,8 +29,9 @@ export function parseTimeToMin(s) {
   return h * 60 + mn;
 }
 
-export function minToTime(min) {
+export function minToTime(min, format = '12h') {
   let h = Math.floor(min / 60), mn = min % 60;
+  if (format === '24h') return `${pad2(h)}:${pad2(mn)}`;
   const ap = h >= 12 ? 'PM' : 'AM';
   let hh = h % 12;
   if (hh === 0) hh = 12;
