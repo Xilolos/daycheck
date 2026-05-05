@@ -1,11 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TYPE_META } from '../constants';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
-import SheetOverlay from './SheetOverlay';
+import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 
 export function Settings({ theme, trackers, themeMode, fontMode, accent, onThemeMode, onFontMode, onAccent, onBack, onEditTracker, onAddTracker, onRemoveTracker, onSignOut, userEmail }) {
+  const [open, setOpen] = useState(false);
+  useEffect(() => { const id = requestAnimationFrame(() => setOpen(true)); return () => cancelAnimationFrame(id); }, []);
+
   return (
-    <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' }}>
+    <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box', transform: open ? 'translateY(0)' : 'translateY(100%)', transition: 'transform 0.38s cubic-bezier(0.32, 0.72, 0, 1)', position: 'absolute', inset: 0, zIndex: 10 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 22px', flexShrink: 0 }}>
         <button onClick={onBack} style={{ background: 'none', border: 'none', color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', cursor: 'pointer', padding: 0 }}>← BACK</button>
         <h2 style={{ margin: 0, fontFamily: `'Fraunces', serif`, fontSize: 22, fontWeight: 500 }}>Settings</h2>
@@ -103,44 +106,55 @@ export function TrackerEditor({ theme, tracker, onClose, onSave, onDelete }) {
     const out = { id, name: name.trim().toUpperCase().slice(0, 5), type };
     if (type === 'weight')   out.unit = unit || 'kg';
     if (type === 'distance') out.unit = unit || 'km';
-    onSave(out);
+    return out;
   };
 
   return (
     <SheetOverlay theme={theme} onClose={onClose}>
-      <div style={{ padding: '8px 22px 18px' }}>
-        <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 12 }}>{isNew ? 'NEW TRACKER' : 'EDIT TRACKER'}</div>
-        <EditorField theme={theme} label="Name (≤5 chars)">
-          <input value={name} onChange={(e) => setName(e.target.value.slice(0, 5))} placeholder="e.g. WAKE" style={inputStyle(theme)} />
-        </EditorField>
-        <EditorField theme={theme} label="Type">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
-            {types.map(t => (
-              <button key={t} onClick={() => setType(t)} style={{
-                padding: '10px 10px', borderRadius: 6, cursor: 'pointer',
-                border: `1px solid ${type === t ? theme.text : theme.rule}`,
-                background: type === t ? theme.text : 'transparent',
-                color: type === t ? theme.bg : theme.text,
-                fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', textAlign: 'left',
-              }}>
-                <div style={{ fontWeight: 600, marginBottom: 2 }}>{TYPE_META[t].label}</div>
-                <div style={{ fontSize: 9, opacity: 0.6 }}>{TYPE_META[t].placeholder}</div>
-              </button>
-            ))}
-          </div>
-        </EditorField>
-        {(type === 'weight' || type === 'distance') && (
-          <EditorField theme={theme} label="Unit">
-            <input value={unit} placeholder={type === 'weight' ? 'kg' : 'km'} onChange={(e) => setUnit(e.target.value.slice(0, 4))} style={inputStyle(theme)} />
-          </EditorField>
-        )}
-        <div style={{ display: 'flex', gap: 8, marginTop: 18, justifyContent: 'center' }}>
-          {!isNew && <button onClick={() => onDelete(tracker.id)} style={{ ...btnSecondary(theme), color: theme.accent, borderColor: theme.accent }}>DELETE</button>}
-          <button onClick={onClose} style={btnSecondary(theme)}>CANCEL</button>
-          <button onClick={save} style={btnPrimary(theme)}>SAVE</button>
-        </div>
-      </div>
+      <TrackerEditorContent
+        theme={theme} isNew={isNew} name={name} setName={setName}
+        type={type} setType={setType} unit={unit} setUnit={setUnit}
+        types={types} tracker={tracker} onClose={onClose} onSave={onSave} onDelete={onDelete} save={save}
+      />
     </SheetOverlay>
+  );
+}
+
+function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit, setUnit, types, tracker, onClose, onSave, onDelete, save }) {
+  const animateThen = useSheetAnimate();
+  return (
+    <div style={{ padding: '8px 22px 18px' }}>
+      <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 12 }}>{isNew ? 'NEW TRACKER' : 'EDIT TRACKER'}</div>
+      <EditorField theme={theme} label="Name (≤5 chars)">
+        <input value={name} onChange={(e) => setName(e.target.value.slice(0, 5))} placeholder="e.g. WAKE" style={inputStyle(theme)} />
+      </EditorField>
+      <EditorField theme={theme} label="Type">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+          {types.map(t => (
+            <button key={t} onClick={() => setType(t)} style={{
+              padding: '10px 10px', borderRadius: 6, cursor: 'pointer',
+              border: `1px solid ${type === t ? theme.text : theme.rule}`,
+              background: type === t ? theme.text : 'transparent',
+              color: type === t ? theme.bg : theme.text,
+              fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', textAlign: 'left',
+            }}>
+              <div style={{ fontWeight: 600, marginBottom: 2 }}>{TYPE_META[t].label}</div>
+              <div style={{ fontSize: 9, opacity: 0.6 }}>{TYPE_META[t].placeholder}</div>
+            </button>
+          ))}
+        </div>
+      </EditorField>
+      {(type === 'weight' || type === 'distance') && (
+        <EditorField theme={theme} label="Unit">
+          <input value={unit} placeholder={type === 'weight' ? 'kg' : 'km'} onChange={(e) => setUnit(e.target.value.slice(0, 4))} style={inputStyle(theme)} />
+        </EditorField>
+      )}
+      <div style={{ display: 'flex', gap: 8, marginTop: 18, justifyContent: 'center' }}>
+        {!isNew && <button onClick={() => animateThen(() => onDelete(tracker.id))} style={{ ...btnSecondary(theme), color: theme.accent, borderColor: theme.accent }}>DELETE</button>}
+        <button onClick={() => animateThen(onClose)} style={btnSecondary(theme)}>CANCEL</button>
+        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out)); }} style={btnPrimary(theme)}>SAVE</button>
+      </div>
+    </div>
   );
 }
 
