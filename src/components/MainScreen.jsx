@@ -63,7 +63,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
           {/* Column header row */}
           <div style={{ display: 'flex', alignItems: 'flex-end', paddingBottom: 8, paddingTop: 6, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim, flexShrink: 0 }}>
-            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg }} />
+            <div style={{ width: DATE_COL_WIDTH, flexShrink: 0, position: 'sticky', left: 0, zIndex: 2, background: theme.bg, alignSelf: 'stretch' }} />
             <div style={{ flex: 1, display: 'grid', gridTemplateColumns: trackerColsTemplate }}>
               {trackers.map(tr => (
                 <div key={tr.id}

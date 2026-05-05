@@ -25,14 +25,13 @@ export default function App() {
   const [accent, setAccentState]         = useState(() => loadPref('dc_accent', '#E5234B'));
   const [todayColor, setTodayColorState] = useState(() => loadPref('dc_todayColor', 'contrast'));
   const [lang, setLangState]             = useState(() => loadPref('dc_lang', 'en'));
-  const [timeFormat, setTimeFormatState] = useState(() => loadPref('dc_timeFormat', '12h'));
+  const timeFormat = '24h';
   const [amoled, setAmoledState]         = useState(() => loadPref('dc_amoled', false));
 
   const setThemeMode  = (v) => { setThemeModeState(v);    savePref('dc_themeMode', v);   };
   const setAccent     = (v) => { setAccentState(v);       savePref('dc_accent', v);      };
   const setTodayColor = (v) => { setTodayColorState(v);  savePref('dc_todayColor', v);  };
   const setLang       = (v) => { setLangState(v);         savePref('dc_lang', v);        };
-  const setTimeFormat = (v) => { setTimeFormatState(v);  savePref('dc_timeFormat', v);  };
   const setAmoled     = (v) => { setAmoledState(v);       savePref('dc_amoled', v);      };
 
   const [screen, setScreen] = useState('main');
@@ -340,7 +339,6 @@ export default function App() {
             onSignOut={handleSignOut}
             userEmail={user.email}
             lang={lang} onLang={setLang}
-            timeFormat={timeFormat} onTimeFormat={setTimeFormat}
           />
         )}
         {editingTrackerId && (
