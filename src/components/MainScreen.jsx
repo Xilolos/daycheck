@@ -67,7 +67,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
       </div>
 
       {/* Single horizontally-scrollable area: column headers + rows + totals */}
-      <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none', overscrollBehavior: 'contain' }}>
+      <div style={{ flex: 1, minHeight: 0, overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none', overscrollBehavior: 'none' }}>
         <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: minContentWidth }}>
 
           {/* Column header row */}

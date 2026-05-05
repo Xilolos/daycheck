@@ -13,16 +13,3 @@ body {
 }
 *::-webkit-scrollbar { width: 0; height: 0; }
 
-/* Simulate rotation lock: counter-rotate content in landscape */
-@media (orientation: landscape) {
-  #root {
-    position: fixed;
-    top: 100vh;
-    left: 0;
-    width: 100vh;
-    height: 100vw;
-    transform-origin: top left;
-    transform: rotate(90deg);
-    overflow: hidden;
-  }
-}
