@@ -68,6 +68,10 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, todayCo
               onClick={() => onTodayColor(null)}
               style={{ width: 36, height: 36, borderRadius: '50%', background: accent, border: todayColor === null ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === null ? `2px solid ${accent}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0, fontSize: 9, color: '#fff', letterSpacing: '0.06em', fontWeight: 700 }}
             >AUTO</button>
+            <button
+              onClick={() => onTodayColor('contrast')}
+              style={{ width: 36, height: 36, borderRadius: '50%', background: theme.text, border: todayColor === 'contrast' ? `3px solid ${theme.accent}` : '3px solid transparent', outline: todayColor === 'contrast' ? `2px solid ${theme.text}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+            />
             {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
               <button key={color} onClick={() => onTodayColor(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: todayColor === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: todayColor === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
             ))}

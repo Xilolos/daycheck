@@ -172,7 +172,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           <ToolbarBtn theme={theme} onClick={onPrev} aria="Previous month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>
-          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: todayColor ?? theme.accent, color: '#fff', fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
+          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: todayColor === 'contrast' ? theme.text : (todayColor ?? theme.accent), color: todayColor === 'contrast' ? theme.bg : '#fff', fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
           <ToolbarBtn theme={theme} onClick={onNext} aria="Next month">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
           </ToolbarBtn>
