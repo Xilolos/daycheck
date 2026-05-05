@@ -42,8 +42,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     requestAnimationFrame(() => { syncing.current = false; });
   };
 
-  const trackerColsTemplate = trackers.map(colWidth).map(w => `${w}px`).join(' ');
-  const trackerRowMinWidth = trackers.reduce((sum, tr) => sum + colWidth(tr), 0) + 16;
+  const trackerColsTemplate = trackers.map(tr => { const w = colWidth(tr); return `minmax(${w}px, ${w}fr)`; }).join(' ');
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
@@ -80,13 +79,12 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
       <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, alignItems: 'end', padding: '6px 0 8px 0', borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim, flexShrink: 0 }}>
         <div style={{ paddingLeft: 18 }} />
         <div ref={headerScrollRef} onScroll={onAnyHScroll(headerScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, minWidth: trackerRowMinWidth }}>
+          <div style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, minWidth: '100%', width: 'max-content' }}>
             {trackers.map(tr => (
               <div key={tr.id} onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }} onClick={() => onColumnLongPress(tr.id)} style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
                 {tr.name}
               </div>
             ))}
-            <div />
           </div>
         </div>
       </div>
@@ -118,14 +116,14 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
           {/* Scrollable tracker columns */}
           <div ref={bodyScrollRef} onScroll={onAnyHScroll(bodyScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: trackerRowMinWidth }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: '100%', width: 'max-content' }}>
               {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
                 const wd = new Date(year, month, d).getDay();
                 const isWeekend = wd === 0 || wd === 6;
                 const dKey = dateKey(year, month, d);
                 const isFuture = todayD != null && d > todayD;
                 return (
-                  <div key={d} style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, flex: 1, minHeight: 0, borderBottom: `1px solid ${theme.rule}`, color: isFuture ? theme.faint : theme.text, fontSize: 11, letterSpacing: '0.01em', background: isWeekend ? theme.stripe : 'transparent' }}>
+                  <div key={d} style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, width: '100%', flex: 1, minHeight: 0, borderBottom: `1px solid ${theme.rule}`, color: isFuture ? theme.faint : theme.text, fontSize: 11, letterSpacing: '0.01em', background: isWeekend ? theme.stripe : 'transparent' }}>
                     {trackers.map(tr => {
                       const raw = data[dKey]?.[tr.id];
                       const display = displayValue(tr, raw);
@@ -145,7 +143,6 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                         </div>
                       );
                     })}
-                    <div />
                   </div>
                 );
               })}
@@ -157,13 +154,12 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
         <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, borderTop: `2px solid ${theme.text}`, flexShrink: 0 }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: 14, height: 26, fontSize: 11, color: theme.text, fontWeight: 600, borderRight: `1px solid ${theme.rule}` }}>Σ</div>
           <div ref={totalsScrollRef} onScroll={onAnyHScroll(totalsScrollRef)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
-            <div style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, minWidth: trackerRowMinWidth, height: 26, alignItems: 'center', fontSize: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: trackerColsTemplate, minWidth: '100%', width: 'max-content', height: 26, alignItems: 'center', fontSize: 10 }}>
               {trackers.map(tr => (
                 <div key={tr.id} style={{ textAlign: 'center', padding: '0 4px', color: theme.text, fontVariantNumeric: 'tabular-nums', fontWeight: 500, whiteSpace: 'nowrap' }}>
                   {totals[tr.id] || '·'}
                 </div>
               ))}
-              <div />
             </div>
           </div>
         </div>

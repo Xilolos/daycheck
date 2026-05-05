@@ -46,13 +46,10 @@ export function Settings({ theme, trackers, themeMode, fontMode, accent, onTheme
 
         <div>
           <SectionLabel theme={theme}>ACCENT COLOR</SectionLabel>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', border: `1px solid ${theme.rule}`, borderRadius: 8 }}>
-            <input
-              type="color" value={accent}
-              onChange={(e) => onAccent(e.target.value)}
-              style={{ appearance: 'none', WebkitAppearance: 'none', width: 44, height: 28, border: `1px solid ${theme.rule}`, borderRadius: 6, padding: 0, cursor: 'pointer', background: 'transparent', flexShrink: 0 }}
-            />
-            <span style={{ fontSize: 12, color: theme.dim, fontVariantNumeric: 'tabular-nums' }}>{accent}</span>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {['#E5234B', '#2563EB', '#059669', '#D97706', '#7C3AED'].map(color => (
+              <button key={color} onClick={() => onAccent(color)} style={{ width: 36, height: 36, borderRadius: '50%', background: color, border: accent === color ? `3px solid ${theme.text}` : '3px solid transparent', outline: accent === color ? `2px solid ${color}` : 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }} />
+            ))}
           </div>
         </div>
 
