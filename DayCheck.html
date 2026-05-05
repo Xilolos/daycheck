@@ -1,0 +1,1412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>DayCheck</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: #F2F2F4;
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    -webkit-font-smoothing: antialiased;
+  }
+  *::-webkit-scrollbar { width: 0; height: 0; }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<!-- ── ios-frame.jsx ─────────────────────────────────────────── -->
+<script type="text/babel">
+function IOSStatusBar({ dark = false, time = '9:41' }) {
+  const c = dark ? '#fff' : '#000';
+  return (
+    <div style={{
+      display: 'flex', gap: 154, alignItems: 'center', justifyContent: 'center',
+      padding: '21px 24px 19px', boxSizing: 'border-box',
+      position: 'relative', zIndex: 20, width: '100%',
+    }}>
+      <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', paddingTop: 1.5 }}>
+        <span style={{ fontFamily: '-apple-system, "SF Pro", system-ui', fontWeight: 590, fontSize: 17, lineHeight: '22px', color: c }}>{time}</span>
+      </div>
+      <div style={{ flex: 1, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 7, paddingTop: 1, paddingRight: 1 }}>
+        <svg width="19" height="12" viewBox="0 0 19 12">
+          <rect x="0" y="7.5" width="3.2" height="4.5" rx="0.7" fill={c}/>
+          <rect x="4.8" y="5" width="3.2" height="7" rx="0.7" fill={c}/>
+          <rect x="9.6" y="2.5" width="3.2" height="9.5" rx="0.7" fill={c}/>
+          <rect x="14.4" y="0" width="3.2" height="12" rx="0.7" fill={c}/>
+        </svg>
+        <svg width="17" height="12" viewBox="0 0 17 12">
+          <path d="M8.5 3.2C10.8 3.2 12.9 4.1 14.4 5.6L15.5 4.5C13.7 2.7 11.2 1.5 8.5 1.5C5.8 1.5 3.3 2.7 1.5 4.5L2.6 5.6C4.1 4.1 6.2 3.2 8.5 3.2Z" fill={c}/>
+          <path d="M8.5 6.8C9.9 6.8 11.1 7.3 12 8.2L13.1 7.1C11.8 5.9 10.2 5.1 8.5 5.1C6.8 5.1 5.2 5.9 3.9 7.1L5 8.2C5.9 7.3 7.1 6.8 8.5 6.8Z" fill={c}/>
+          <circle cx="8.5" cy="10.5" r="1.5" fill={c}/>
+        </svg>
+        <svg width="27" height="13" viewBox="0 0 27 13">
+          <rect x="0.5" y="0.5" width="23" height="12" rx="3.5" stroke={c} strokeOpacity="0.35" fill="none"/>
+          <rect x="2" y="2" width="20" height="9" rx="2" fill={c}/>
+          <path d="M25 4.5V8.5C25.8 8.2 26.5 7.2 26.5 6.5C26.5 5.8 25.8 4.8 25 4.5Z" fill={c} fillOpacity="0.4"/>
+        </svg>
+      </div>
+    </div>
+  );
+}
+
+function IOSGlassPill({ children, dark = false, style = {} }) {
+  return (
+    <div style={{
+      height: 44, minWidth: 44, borderRadius: 9999,
+      position: 'relative', overflow: 'hidden',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      boxShadow: dark
+        ? '0 2px 6px rgba(0,0,0,0.35), 0 6px 16px rgba(0,0,0,0.2)'
+        : '0 1px 3px rgba(0,0,0,0.07), 0 3px 10px rgba(0,0,0,0.06)',
+      ...style,
+    }}>
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 9999,
+        backdropFilter: 'blur(12px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+        background: dark ? 'rgba(120,120,128,0.28)' : 'rgba(255,255,255,0.5)',
+      }} />
+      <div style={{
+        position: 'absolute', inset: 0, borderRadius: 9999,
+        boxShadow: dark
+          ? 'inset 1.5px 1.5px 1px rgba(255,255,255,0.15), inset -1px -1px 1px rgba(255,255,255,0.08)'
+          : 'inset 1.5px 1.5px 1px rgba(255,255,255,0.7), inset -1px -1px 1px rgba(255,255,255,0.4)',
+        border: dark ? '0.5px solid rgba(255,255,255,0.15)' : '0.5px solid rgba(0,0,0,0.06)',
+      }} />
+      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', padding: '0 4px' }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function IOSNavBar({ title = 'Title', dark = false, trailingIcon = true }) {
+  const muted = dark ? 'rgba(255,255,255,0.6)' : '#404040';
+  const text = dark ? '#fff' : '#000';
+  const pillIcon = (content) => (
+    <IOSGlassPill dark={dark}>
+      <div style={{ width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        {content}
+      </div>
+    </IOSGlassPill>
+  );
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10, paddingTop: 62, paddingBottom: 10, position: 'relative', zIndex: 5 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px' }}>
+        {pillIcon(
+          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" style={{ marginLeft: -1 }}>
+            <path d="M10 2L2 10l8 8" stroke={muted} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        )}
+        {trailingIcon && pillIcon(
+          <svg width="22" height="6" viewBox="0 0 22 6">
+            <circle cx="3" cy="3" r="2.5" fill={muted}/>
+            <circle cx="11" cy="3" r="2.5" fill={muted}/>
+            <circle cx="19" cy="3" r="2.5" fill={muted}/>
+          </svg>
+        )}
+      </div>
+      <div style={{ padding: '0 16px', fontFamily: '-apple-system, system-ui', fontSize: 34, fontWeight: 700, lineHeight: '41px', color: text, letterSpacing: 0.4 }}>{title}</div>
+    </div>
+  );
+}
+
+function IOSListRow({ title, detail, icon, chevron = true, isLast = false, dark = false }) {
+  const text = dark ? '#fff' : '#000';
+  const sec = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+  const ter = dark ? 'rgba(235,235,245,0.3)' : 'rgba(60,60,67,0.3)';
+  const sep = dark ? 'rgba(84,84,88,0.65)' : 'rgba(60,60,67,0.12)';
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', minHeight: 52, padding: '0 16px', position: 'relative', fontFamily: '-apple-system, system-ui', fontSize: 17, letterSpacing: -0.43 }}>
+      {icon && <div style={{ width: 30, height: 30, borderRadius: 7, background: icon, marginRight: 12, flexShrink: 0 }} />}
+      <div style={{ flex: 1, color: text }}>{title}</div>
+      {detail && <span style={{ color: sec, marginRight: 6 }}>{detail}</span>}
+      {chevron && (
+        <svg width="8" height="14" viewBox="0 0 8 14" style={{ flexShrink: 0 }}>
+          <path d="M1 1l6 6-6 6" stroke={ter} strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      )}
+      {!isLast && <div style={{ position: 'absolute', bottom: 0, right: 0, left: icon ? 58 : 16, height: 0.5, background: sep }} />}
+    </div>
+  );
+}
+
+function IOSList({ header, children, dark = false }) {
+  const hc = dark ? 'rgba(235,235,245,0.6)' : 'rgba(60,60,67,0.6)';
+  const bg = dark ? '#1C1C1E' : '#fff';
+  return (
+    <div>
+      {header && <div style={{ fontFamily: '-apple-system, system-ui', fontSize: 13, color: hc, textTransform: 'uppercase', padding: '8px 36px 6px', letterSpacing: -0.08 }}>{header}</div>}
+      <div style={{ background: bg, borderRadius: 26, margin: '0 16px', overflow: 'hidden' }}>{children}</div>
+    </div>
+  );
+}
+
+function IOSDevice({ children, width = 402, height = 874, dark = false, title, keyboard = false }) {
+  return (
+    <div style={{
+      width, height, borderRadius: 48, overflow: 'hidden',
+      position: 'relative', background: dark ? '#000' : '#F2F2F7',
+      boxShadow: '0 40px 80px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.12)',
+      fontFamily: '-apple-system, system-ui, sans-serif',
+      WebkitFontSmoothing: 'antialiased',
+    }}>
+      <div style={{ position: 'absolute', top: 11, left: '50%', transform: 'translateX(-50%)', width: 126, height: 37, borderRadius: 24, background: '#000', zIndex: 50 }} />
+      <div style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+        <IOSStatusBar dark={dark} />
+      </div>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+        {title !== undefined && <IOSNavBar title={title} dark={dark} />}
+        <div style={{ flex: 1, overflow: 'auto' }}>{children}</div>
+      </div>
+      <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 60, height: 34, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', paddingBottom: 8, pointerEvents: 'none' }}>
+        <div style={{ width: 139, height: 5, borderRadius: 100, background: dark ? 'rgba(255,255,255,0.7)' : 'rgba(0,0,0,0.25)' }} />
+      </div>
+    </div>
+  );
+}
+
+Object.assign(window, { IOSDevice, IOSStatusBar, IOSNavBar, IOSGlassPill, IOSList, IOSListRow });
+</script>
+
+<!-- ── tweaks-panel.jsx ──────────────────────────────────────── -->
+<script type="text/babel">
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2}
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+`;
+
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(clampToViewport) : null;
+    if (ro) { ro.observe(document.documentElement); return () => ro.disconnect(); }
+    window.addEventListener('resize', clampToViewport);
+    return () => window.removeEventListener('resize', clampToViewport);
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = { x: startRight - (ev.clientX - sx), y: startBottom - (ev.clientY - sy) };
+      clampToViewport();
+    };
+    const up = () => { window.removeEventListener('mousemove', move); window.removeEventListener('mouseup', up); };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel" style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks" onMouseDown={(e) => e.stopPropagation()} onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+function TweakSection({ label, children }) {
+  return <><div className="twk-sect">{label}</div>{children}</>;
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => { if (!trackRef.current) return; const v = segAt(ev.clientX); if (v !== valueRef.current) onChange(v); };
+    const up = () => { setDragging(false); window.removeEventListener('pointermove', move); window.removeEventListener('pointerup', up); };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown} className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb" style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`, width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>{o.label}</button>)}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value} onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+Object.assign(window, { useTweaks, TweaksPanel, TweakSection, TweakRow, TweakRadio, TweakColor });
+</script>
+
+<!-- ── onboarding.jsx ────────────────────────────────────────── -->
+<script type="text/babel">
+function btnPrimary(theme) {
+  return {
+    height: 36, padding: '0 18px', borderRadius: 8, border: 'none',
+    background: theme.text, color: theme.bg,
+    fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em',
+    fontWeight: 600, cursor: 'pointer',
+  };
+}
+function btnSecondary(theme) {
+  return {
+    height: 36, padding: '0 14px', borderRadius: 8,
+    border: `1px solid ${theme.rule}`,
+    background: theme.bg, color: theme.text,
+    fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
+    cursor: 'pointer',
+  };
+}
+
+function linkBtn(theme) {
+  return {
+    background: 'transparent', border: 'none',
+    color: theme.text, fontFamily: 'inherit', fontSize: 12,
+    cursor: 'pointer', padding: 0, textDecoration: 'underline',
+    textUnderlineOffset: 3,
+  };
+}
+
+function Onboarding({ theme, fontStack, fontMono, onDone }) {
+  const [step, setStep] = React.useState('auth');
+  const [mode, setMode] = React.useState('signin');
+
+  if (step === 'auth') return <AuthScreen theme={theme} fontStack={fontStack} mode={mode} setMode={setMode} onContinueEmail={() => setStep('email')} onProvider={() => setStep('teaser')} />;
+  if (step === 'email') return <EmailScreen theme={theme} fontStack={fontStack} mode={mode} onBack={() => setStep('auth')} onContinue={() => setStep('teaser')} />;
+  return <Teaser theme={theme} fontStack={fontStack} fontMono={fontMono} onDone={onDone} />;
+}
+
+function AuthScreen({ theme, fontStack, mode, setMode, onContinueEmail, onProvider }) {
+  return (
+    <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingTop: 54, fontFamily: fontStack, boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, padding: '32px 28px 8px', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 40 }}>
+          <div style={{ fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 30, fontWeight: 500, letterSpacing: '-0.01em', lineHeight: 1 }}>DayCheck</div>
+          <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>·  A LEDGER</div>
+        </div>
+        <h2 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 28, fontWeight: 500, lineHeight: 1.1, letterSpacing: '-0.015em' }}>
+          {mode === 'signin' ? 'Pick up where you left off.' : 'Start your ledger.'}
+        </h2>
+        <p style={{ marginTop: 14, marginBottom: 28, fontSize: 13, lineHeight: 1.5, color: theme.dim }}>
+          {mode === 'signin' ? 'Sign in to keep your pages in sync across devices.' : 'Create an account to save your trackers and history.'}
+        </p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <ProviderBtn theme={theme} onClick={onProvider} icon={<AppleGlyph/>} label="Continue with Apple" />
+          <ProviderBtn theme={theme} onClick={onProvider} icon={<GoogleGlyph/>} label="Continue with Google" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '6px 0' }}>
+            <div style={{ flex: 1, height: 1, background: theme.rule }}/>
+            <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>OR</div>
+            <div style={{ flex: 1, height: 1, background: theme.rule }}/>
+          </div>
+          <ProviderBtn theme={theme} onClick={onContinueEmail} icon={<MailGlyph/>} label={mode === 'signin' ? 'Continue with email' : 'Sign up with email'} />
+        </div>
+      </div>
+      <div style={{ padding: '14px 22px 28px', borderTop: `1px solid ${theme.rule}`, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 6, fontSize: 12, color: theme.dim }}>
+        {mode === 'signin' ? (
+          <><span>New here?</span><button onClick={() => setMode('register')} style={linkBtn(theme)}>Create an account</button></>
+        ) : (
+          <><span>Already have one?</span><button onClick={() => setMode('signin')} style={linkBtn(theme)}>Sign in</button></>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmailScreen({ theme, fontStack, mode, onBack, onContinue }) {
+  const [email, setEmail] = React.useState('');
+  const [pwd, setPwd] = React.useState('');
+  const valid = email.trim().length > 3 && pwd.length >= 4;
+  return (
+    <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingTop: 54, fontFamily: fontStack, boxSizing: 'border-box' }}>
+      <div style={{ padding: '14px 18px', display: 'flex', alignItems: 'center', gap: 6 }}>
+        <button onClick={onBack} aria-label="Back" style={{ width: 32, height: 32, border: `1px solid ${theme.rule}`, background: 'transparent', color: theme.text, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+        </button>
+        <div style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>{mode === 'signin' ? 'SIGN IN' : 'REGISTER'} · EMAIL</div>
+      </div>
+      <div style={{ flex: 1, padding: '20px 28px', display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+        <h2 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 26, fontWeight: 500, lineHeight: 1.15, letterSpacing: '-0.015em' }}>{mode === 'signin' ? 'Welcome back.' : 'A few details.'}</h2>
+        <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <EmailField theme={theme} label="EMAIL" value={email} onChange={setEmail} type="email" placeholder="you@example.com"/>
+          <EmailField theme={theme} label="PASSWORD" value={pwd} onChange={setPwd} type="password" placeholder="••••••••"/>
+          {mode === 'signin' && <div style={{ alignSelf: 'flex-end', marginTop: -4 }}><button style={linkBtn(theme)}>Forgot?</button></div>}
+        </div>
+      </div>
+      <div style={{ padding: '12px 22px 28px', borderTop: `1px solid ${theme.rule}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1, fontSize: 11, color: theme.dim }}>{mode === 'register' ? 'By continuing, you agree to the terms.' : ''}</div>
+        <button onClick={onContinue} disabled={!valid} style={{ ...btnPrimary(theme), opacity: valid ? 1 : 0.4, cursor: valid ? 'pointer' : 'default' }}>
+          {mode === 'signin' ? 'SIGN IN' : 'CREATE ACCOUNT'}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function EmailField({ theme, label, value, onChange, type='text', placeholder }) {
+  return (
+    <label style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <span style={{ fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>{label}</span>
+      <input type={type} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)}
+             style={{ border: 'none', borderBottom: `1px solid ${theme.rule}`, background: 'transparent', color: theme.text, padding: '8px 0', fontFamily: 'inherit', fontSize: 15, outline: 'none' }}/>
+    </label>
+  );
+}
+
+function ProviderBtn({ theme, onClick, icon, label }) {
+  return (
+    <button onClick={onClick} style={{ height: 46, padding: '0 16px', borderRadius: 10, border: `1px solid ${theme.rule}`, background: theme.bg, color: theme.text, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, fontFamily: 'inherit', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
+      <span style={{ width: 18, height: 18, display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>{icon}</span>
+      {label}
+    </button>
+  );
+}
+
+function Teaser({ theme, fontStack, fontMono, onDone }) {
+  return (
+    <div style={{ height: '100%', background: theme.bg, color: theme.text, display: 'flex', flexDirection: 'column', overflow: 'hidden', paddingTop: 54, fontFamily: fontStack, boxSizing: 'border-box' }}>
+      <div style={{ flex: 1, padding: '20px 24px', display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <MiniLedger theme={theme} fontMono={fontMono}/>
+        <div style={{ marginTop: 24, fontSize: 10, letterSpacing: '0.18em', color: theme.dim }}>ONE PAGE. ONE MONTH.</div>
+        <h2 style={{ margin: '10px 0 0 0', fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 28, fontWeight: 500, lineHeight: 1.1, letterSpacing: '-0.015em' }}>
+          A quiet ledger for the things you keep doing.
+        </h2>
+        <p style={{ marginTop: 12, marginBottom: 0, fontSize: 13, lineHeight: 1.55, color: theme.dim }}>
+          Choose a few columns. Tap a cell, jot it down. The page fills in over the month — no streaks yelling at you, no charts pretending to know you.
+        </p>
+      </div>
+      <div style={{ padding: '12px 22px 28px', borderTop: `1px solid ${theme.rule}`, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ flex: 1 }}/>
+        <button onClick={onDone} style={btnPrimary(theme)}>OPEN LEDGER</button>
+      </div>
+    </div>
+  );
+}
+
+function MiniLedger({ theme, fontMono }) {
+  const cols = [{ name: 'WAKE', w: '1.2fr' }, { name: 'READ', w: '0.7fr' }, { name: 'WGHT', w: '1.1fr' }, { name: 'RUN', w: '1fr' }];
+  const rows = [
+    { d: 1, l: 'S', vals: ['7:15', '×', '70.5', '12.0'] },
+    { d: 2, l: 'M', vals: ['7:18', '×', '70.3', '·'] },
+    { d: 3, l: 'T', vals: ['7:34', '×', '70.4', '8.0'] },
+    { d: 4, l: 'W', vals: ['7:30', '·', '70.3', '·'] },
+    { d: 5, l: 'T', vals: ['7:26', '×', '69.9', '5.4'] },
+    { d: 6, l: 'F', vals: ['·', '·', '·', '·'], today: true },
+    { d: 7, l: 'S', vals: ['·', '·', '·', '·'], future: true },
+  ];
+  const tmpl = `40px ${cols.map(c => c.w).join(' ')}`;
+  return (
+    <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden', background: theme.bg, fontFamily: fontMono }}>
+      <div style={{ padding: '10px 12px', display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', borderBottom: `1px solid ${theme.rule}` }}>
+        <div style={{ fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 16, letterSpacing: '-0.01em' }}>February <span style={{ color: theme.dim }}>2026</span></div>
+        <div style={{ fontSize: 9, letterSpacing: '0.06em', color: theme.text, fontWeight: 600, padding: '2px 8px', borderRadius: 999, border: `1px solid ${theme.rule}`, fontVariantNumeric: 'tabular-nums' }}>5d</div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: tmpl, padding: '4px 10px', borderBottom: `1px solid ${theme.rule}`, fontSize: 8, letterSpacing: '0.1em', color: theme.dim }}>
+        <div/>
+        {cols.map(c => <div key={c.name} style={{ textAlign: 'center' }}>{c.name}</div>)}
+      </div>
+      {rows.map((r, i) => (
+        <div key={r.d} style={{ display: 'grid', gridTemplateColumns: tmpl, alignItems: 'center', padding: '0 10px', height: 22, borderBottom: i < rows.length - 1 ? `1px solid ${theme.rule}` : 'none', fontSize: 10, fontVariantNumeric: 'tabular-nums', color: r.future ? theme.faint : theme.text }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', borderRight: `1px solid ${theme.rule}`, marginRight: 8, height: '100%' }}>
+            {r.today ? (
+              <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 18, height: 14, borderRadius: 3, background: theme.accent, color: '#fff', fontSize: 9, fontWeight: 600 }}>{String(r.d).padStart(2,'0')}</span>
+            ) : (
+              <span style={{ justifySelf: 'center', color: r.future ? theme.faint : theme.dim }}>{String(r.d).padStart(2,'0')}</span>
+            )}
+            <span style={{ justifySelf: 'center', color: theme.faint, fontSize: 9 }}>{r.l}</span>
+          </div>
+          {r.vals.map((v, j) => (
+            <div key={j} style={{ textAlign: 'center', color: v === '·' ? theme.faint : (r.future ? theme.faint : theme.text) }}>{v}</div>
+          ))}
+        </div>
+      ))}
+      <div style={{ display: 'grid', gridTemplateColumns: tmpl, alignItems: 'center', padding: '0 10px', height: 20, borderTop: `1.5px solid ${theme.text}`, fontSize: 9, color: theme.text, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>
+        <div style={{ borderRight: `1px solid ${theme.rule}`, marginRight: 8, height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Σ</div>
+        <div style={{ textAlign: 'center' }}>7:25</div>
+        <div style={{ textAlign: 'center' }}>4d</div>
+        <div style={{ textAlign: 'center' }}>70.3</div>
+        <div style={{ textAlign: 'center' }}>25.4</div>
+      </div>
+    </div>
+  );
+}
+
+function AppleGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+      <path d="M11.2 8.4c0-1.6 1.3-2.4 1.4-2.4-.8-1.1-2-1.3-2.4-1.3-1-.1-2 .6-2.5.6-.5 0-1.3-.6-2.2-.6C4.1 4.7 2.9 5.7 2.4 7c-1 1.7-.3 4.3.7 5.7.5.7 1.1 1.5 1.9 1.5.8 0 1.1-.5 2.1-.5 1 0 1.2.5 2.1.5.9 0 1.4-.7 1.9-1.4.6-.8.9-1.6.9-1.6s-1.8-.7-1.8-2.8zM9.4 3.6c.4-.5.7-1.2.6-1.9-.6 0-1.4.4-1.8.9-.4.5-.7 1.1-.6 1.8.7 0 1.4-.4 1.8-.8z"/>
+    </svg>
+  );
+}
+function GoogleGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path fill="#4285F4" d="M15.6 8.2c0-.5 0-1-.1-1.4H8v2.8h4.3c-.2 1-.7 1.8-1.6 2.4v2h2.6c1.5-1.4 2.3-3.4 2.3-5.8z"/>
+      <path fill="#34A853" d="M8 16c2.2 0 4-.7 5.3-2l-2.6-2c-.7.5-1.6.8-2.7.8-2.1 0-3.8-1.4-4.5-3.3H1v2C2.3 14.2 4.9 16 8 16z"/>
+      <path fill="#FBBC05" d="M3.5 9.5C3.3 9 3.2 8.5 3.2 8s.1-1 .3-1.5v-2H1C.4 5.6 0 6.8 0 8s.4 2.4 1 3.5l2.5-2z"/>
+      <path fill="#EA4335" d="M8 3.2c1.2 0 2.3.4 3.1 1.2L13.4 2C12 .7 10.2 0 8 0 4.9 0 2.3 1.8 1 4.5l2.5 2C4.2 4.6 5.9 3.2 8 3.2z"/>
+    </svg>
+  );
+}
+function MailGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1.5" y="3" width="13" height="10" rx="1.5"/>
+      <path d="M2 4l6 5 6-5"/>
+    </svg>
+  );
+}
+
+Object.assign(window, { Onboarding, btnPrimary, btnSecondary });
+</script>
+
+<!-- ── screens.jsx ───────────────────────────────────────────── -->
+<script type="text/babel">
+function Settings({ theme, trackers, themeMode, onThemeMode, onBack, onEditTracker, onAddTracker, onRemoveTracker }) {
+  return (
+    <div style={{ height: '100%', background: theme.bg, color: theme.text, paddingTop: 54, display: 'flex', flexDirection: 'column', overflow: 'hidden', boxSizing: 'border-box' }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 22px', flexShrink: 0 }}>
+        <button onClick={onBack} style={{ background: 'none', border: 'none', color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', cursor: 'pointer', padding: 0 }}>← BACK</button>
+        <h2 style={{ margin: 0, fontFamily: `'Fraunces', serif`, fontSize: 22, fontWeight: 500 }}>Settings</h2>
+        <span style={{ width: 50 }}/>
+      </div>
+      <div style={{ flex: 1, overflow: 'hidden', padding: '8px 22px 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div>
+          <SectionLabel theme={theme}>APPEARANCE</SectionLabel>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 6 }}>
+            {['light', 'dark', 'system'].map(opt => (
+              <button key={opt} onClick={() => onThemeMode(opt)} style={{
+                padding: '10px 0', borderRadius: 6, cursor: 'pointer',
+                border: `1px solid ${themeMode === opt ? theme.text : theme.rule}`,
+                background: themeMode === opt ? theme.text : 'transparent',
+                color: themeMode === opt ? theme.bg : theme.text,
+                fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase',
+              }}>{opt}</button>
+            ))}
+          </div>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+          <SectionLabel theme={theme}>TRACKERS</SectionLabel>
+          <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden', display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
+            <div style={{ flex: 1, overflowY: 'auto', minHeight: 0 }}>
+              {trackers.map((tr) => (
+                <div key={tr.id} onClick={() => onEditTracker(tr.id)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderBottom: `1px solid ${theme.rule}`, cursor: 'pointer' }}>
+                  <div>
+                    <div style={{ fontSize: 13, letterSpacing: '0.06em' }}>{tr.name}</div>
+                    <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em' }}>
+                      {TYPE_META[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}
+                    </div>
+                  </div>
+                  <span style={{ color: theme.dim }}>›</span>
+                </div>
+              ))}
+            </div>
+            <div onClick={onAddTracker} style={{ padding: '12px 14px', borderTop: `1px solid ${theme.rule}`, color: theme.dim, fontSize: 12, cursor: 'pointer', letterSpacing: '0.04em', flexShrink: 0 }}>
+              + Add tracker
+            </div>
+          </div>
+        </div>
+        <div style={{ fontSize: 10, color: theme.faint, lineHeight: 1.6, textAlign: 'center', flexShrink: 0 }}>
+          DAYCHECK V0.1 · LONG-PRESS A CELL FOR QUICK ACTIONS
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionLabel({ theme, children }) {
+  return <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.18em', marginBottom: 8, marginTop: 4 }}>{children}</div>;
+}
+
+function TrackerEditor({ theme, tracker, existingIds, onClose, onSave, onDelete }) {
+  const isNew = !tracker;
+  const [name, setName] = React.useState(tracker?.name || '');
+  const [type, setType] = React.useState(tracker?.type || 'check');
+  const [unit, setUnit] = React.useState(tracker?.unit || '');
+  const types = ['time', 'check', 'weight', 'counter', 'distance', 'duration', 'mood'];
+
+  const save = () => {
+    if (!name.trim()) return;
+    const id = tracker?.id || `t${Date.now().toString(36)}`;
+    const out = { id, name: name.trim().toUpperCase().slice(0, 5), type };
+    if (type === 'weight')   out.unit = unit || 'kg';
+    if (type === 'distance') out.unit = unit || 'km';
+    onSave(out);
+  };
+
+  return (
+    <SheetOverlay theme={theme} onClose={onClose}>
+      <div style={{ padding: '8px 22px 18px' }}>
+        <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 12 }}>{isNew ? 'NEW TRACKER' : 'EDIT TRACKER'}</div>
+        <EditorField theme={theme} label="Name (≤5 chars)">
+          <input value={name} onChange={(e) => setName(e.target.value.slice(0, 5))} placeholder="e.g. WAKE" style={inputStyle(theme)} />
+        </EditorField>
+        <EditorField theme={theme} label="Type">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 6 }}>
+            {types.map(t => (
+              <button key={t} onClick={() => setType(t)} style={{
+                padding: '10px 10px', borderRadius: 6, cursor: 'pointer',
+                border: `1px solid ${type === t ? theme.text : theme.rule}`,
+                background: type === t ? theme.text : 'transparent',
+                color: type === t ? theme.bg : theme.text,
+                fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', textAlign: 'left',
+              }}>
+                <div style={{ fontWeight: 600, marginBottom: 2 }}>{TYPE_META[t].label}</div>
+                <div style={{ fontSize: 9, opacity: 0.6 }}>{TYPE_META[t].placeholder}</div>
+              </button>
+            ))}
+          </div>
+        </EditorField>
+        {(type === 'weight' || type === 'distance') && (
+          <EditorField theme={theme} label="Unit">
+            <input value={unit} placeholder={type === 'weight' ? 'kg' : 'km'} onChange={(e) => setUnit(e.target.value.slice(0, 4))} style={inputStyle(theme)} />
+          </EditorField>
+        )}
+        <div style={{ display: 'flex', gap: 8, marginTop: 18, justifyContent: 'center' }}>
+          {!isNew && <button onClick={() => onDelete(tracker.id)} style={{ ...btnSecondary(theme), color: theme.accent, borderColor: theme.accent }}>DELETE</button>}
+          <button onClick={onClose} style={btnSecondary(theme)}>CANCEL</button>
+          <button onClick={save} style={btnPrimary(theme)}>SAVE</button>
+        </div>
+      </div>
+    </SheetOverlay>
+  );
+}
+
+function EditorField({ theme, label, children }) {
+  return (
+    <div style={{ marginBottom: 14 }}>
+      <div style={{ fontSize: 9, color: theme.dim, letterSpacing: '0.18em', marginBottom: 6 }}>{label}</div>
+      {children}
+    </div>
+  );
+}
+function inputStyle(theme) {
+  return {
+    width: '100%', boxSizing: 'border-box', padding: '10px 12px',
+    background: theme.bg, color: theme.text,
+    border: `1px solid ${theme.rule}`, borderRadius: 6,
+    fontFamily: 'inherit', fontSize: 13, letterSpacing: '0.02em', outline: 'none',
+  };
+}
+
+function DayDetailSheet({ theme, dKey, trackers, values, onClose, onSave }) {
+  const [draft, setDraft] = React.useState(() => ({ ...values }));
+  const [y, m, d] = dKey.split('-').map(Number);
+  const wd = new Date(y, m - 1, d).getDay();
+  const setField = (id, v) => setDraft(prev => ({ ...prev, [id]: v }));
+
+  return (
+    <SheetOverlay theme={theme} onClose={onClose}>
+      <div style={{ padding: '8px 22px 18px' }}>
+        <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 4 }}>
+          {['SUN','MON','TUE','WED','THU','FRI','SAT'][wd]}
+        </div>
+        <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 26, fontWeight: 500, marginBottom: 14 }}>
+          {MONTHS[m-1]} {pad2(d)}
+        </div>
+        {trackers.map(tr => (
+          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: `1px solid ${theme.rule}` }}>
+            <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.name}</div>
+            <div><TrackerInput theme={theme} tracker={tr} value={draft[tr.id]} onChange={(v) => setField(tr.id, v)} /></div>
+          </div>
+        ))}
+        <div style={{ display: 'flex', gap: 8, marginTop: 18, justifyContent: 'center' }}>
+          <button onClick={onClose} style={btnSecondary(theme)}>CANCEL</button>
+          <button onClick={() => onSave(draft)} style={btnPrimary(theme)}>SAVE</button>
+        </div>
+      </div>
+    </SheetOverlay>
+  );
+}
+
+function TrackerInput({ theme, tracker, value, onChange }) {
+  const v = value ?? '';
+  if (tracker.type === 'check') {
+    return (
+      <div style={{ display: 'flex', gap: 8 }}>
+        {['', '×'].map(opt => (
+          <button key={opt || 'empty'} onClick={() => onChange(opt)} style={{
+            flex: 1, padding: '10px', borderRadius: 6,
+            border: `1px solid ${v === opt ? theme.text : theme.rule}`,
+            background: v === opt ? theme.text : 'transparent',
+            color: v === opt ? theme.bg : theme.text,
+            fontFamily: 'inherit', fontSize: 14, cursor: 'pointer',
+          }}>{opt || '—'}</button>
+        ))}
+      </div>
+    );
+  }
+  if (tracker.type === 'mood') {
+    return (
+      <div style={{ display: 'flex', gap: 6 }}>
+        {[1,2,3,4,5].map(n => (
+          <button key={n} onClick={() => onChange(String(n))} style={{
+            flex: 1, padding: '10px 0', borderRadius: 6,
+            border: `1px solid ${String(n) === v ? theme.text : theme.rule}`,
+            background: String(n) === v ? theme.text : 'transparent',
+            color: String(n) === v ? theme.bg : theme.text,
+            fontFamily: 'inherit', fontSize: 13, cursor: 'pointer',
+          }}>{n}</button>
+        ))}
+      </div>
+    );
+  }
+  const placeholder = TYPE_META[tracker.type]?.placeholder || '';
+  return (
+    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <input value={v} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={inputStyle(theme)} />
+      {tracker.unit && <span style={{ fontSize: 11, color: theme.dim }}>{tracker.unit}</span>}
+    </div>
+  );
+}
+
+function QuickActionMenu({ theme, target, tracker, value, onClose, onClear, onQuickSet, onEdit }) {
+  if (!tracker) return null;
+  let quickOptions = [];
+  if (tracker.type === 'check')   quickOptions = [{ label: 'Mark ×', value: '×' }];
+  if (tracker.type === 'counter') quickOptions = [{label:'1',value:'1'},{label:'2',value:'2'},{label:'3',value:'3'}];
+  if (tracker.type === 'mood')    quickOptions = [1,2,3,4,5].map(n => ({label:String(n),value:String(n)}));
+
+  return (
+    <SheetOverlay theme={theme} onClose={onClose} small>
+      <div style={{ padding: '14px 22px 22px' }}>
+        <div style={{ fontSize: 10, letterSpacing: '0.2em', color: theme.dim, marginBottom: 10 }}>
+          {tracker.name} · {target.dateKey}
+        </div>
+        {quickOptions.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, marginBottom: 10, flexWrap: 'wrap' }}>
+            {quickOptions.map(opt => (
+              <button key={opt.value} onClick={() => onQuickSet(opt.value)} style={{
+                ...btnSecondary(theme), padding: '0 14px',
+                fontWeight: value === opt.value ? 700 : 400,
+                borderColor: value === opt.value ? theme.text : theme.rule,
+              }}>{opt.label}</button>
+            ))}
+          </div>
+        )}
+        <button onClick={onEdit} style={{ ...btnSecondary(theme), width: '100%', marginBottom: 6 }}>EDIT FULL DAY</button>
+        <button onClick={onClear} style={{ ...btnSecondary(theme), width: '100%', color: theme.accent, borderColor: theme.accent }}>CLEAR VALUE</button>
+      </div>
+    </SheetOverlay>
+  );
+}
+
+function SheetOverlay({ theme, children, onClose, small }) {
+  return (
+    <div style={{ position: 'absolute', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', background: 'rgba(0,0,0,0.35)' }} onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', background: theme.bg, color: theme.text, borderTopLeftRadius: 18, borderTopRightRadius: 18, maxHeight: small ? '50%' : '85%', overflowY: 'auto', boxShadow: '0 -8px 30px rgba(0,0,0,0.2)' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', padding: '8px 0 4px' }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: theme.faint }}/>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function StatsSheet({ theme, trackers, data, today, onClose }) {
+  const stats = trackers.map(tr => {
+    const allKeys = Object.keys(data);
+    const filled = allKeys.filter(k => { const v = data[k]?.[tr.id]; return v !== undefined && v !== null && v !== ''; });
+    let longest = 0;
+    if (tr.type === 'check') {
+      const dates = filled.map(k => k).sort();
+      let cur = 0, prev = null;
+      for (const k of dates) {
+        const [y, m, d] = k.split('-').map(Number);
+        const t = new Date(y, m - 1, d).getTime();
+        if (prev !== null && (t - prev) === 86400000) cur++;
+        else cur = 1;
+        if (cur > longest) longest = cur;
+        prev = t;
+      }
+    }
+    const pct = Math.round((filled.length / 365) * 100);
+    return { tr, filled: filled.length, longest, pct };
+  });
+  const bestCurrent = stats.reduce((m, s) => Math.max(m, s.tr.type === 'check' ? s.longest : 0), 0);
+
+  return (
+    <SheetOverlay theme={theme} onClose={onClose}>
+      <div style={{ padding: '8px 22px 22px' }}>
+        <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 4 }}>STATS · YEAR TO DATE</div>
+        <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 26, fontWeight: 500, marginBottom: 18 }}>{today.y}</div>
+        <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, padding: '14px 16px', marginBottom: 18, display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
+          <div>
+            <div style={{ fontSize: 9, letterSpacing: '0.2em', color: theme.dim }}>LONGEST STREAK</div>
+            <div style={{ fontSize: 11, color: theme.dim, marginTop: 4 }}>across all checks</div>
+          </div>
+          <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 44, fontWeight: 500, color: theme.text, fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+            {bestCurrent}<span style={{ fontSize: 18, color: theme.dim, marginLeft: 4 }}>d</span>
+          </div>
+        </div>
+        <div style={{ fontSize: 9, letterSpacing: '0.2em', color: theme.dim, marginBottom: 8 }}>BY TRACKER</div>
+        <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px', fontSize: 9, letterSpacing: '0.16em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
+            <div></div>
+            <div style={{ textAlign: 'right' }}>LOG</div>
+            <div style={{ textAlign: 'right' }}>BEST</div>
+            <div style={{ textAlign: 'right' }}>%YR</div>
+          </div>
+          {stats.map(({ tr, filled, longest, pct }, i) => (
+            <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 60px 60px 60px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
+              <div style={{ letterSpacing: '0.06em' }}>{tr.name}</div>
+              <div style={{ textAlign: 'right' }}>{filled}</div>
+              <div style={{ textAlign: 'right' }}>{tr.type === 'check' ? `${longest}d` : '·'}</div>
+              <div style={{ textAlign: 'right' }}>{pct}%</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 18 }}>
+          <button onClick={onClose} style={btnPrimary(theme)}>CLOSE</button>
+        </div>
+      </div>
+    </SheetOverlay>
+  );
+}
+
+Object.assign(window, { Settings, TrackerEditor, DayDetailSheet, QuickActionMenu, StatsSheet });
+</script>
+
+<!-- ── main-screen.jsx ───────────────────────────────────────── -->
+<script type="text/babel">
+const DATE_COL_WIDTH = 56;
+
+function MainScreen({ theme, fontStack, fontMono, year, month, trackers, data, totals, streaks, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
+  const dim = daysInMonth(year, month);
+  const todayD = (year === FAKE_TODAY.y && month === FAKE_TODAY.m) ? FAKE_TODAY.d : null;
+  const monthName = MONTHS[month];
+
+  const colWidth = (tr) => {
+    switch (tr.type) {
+      case 'time': return 64; case 'check': return 44; case 'weight': return 64;
+      case 'counter': return 40; case 'distance': return 60; case 'duration': return 60;
+      case 'mood': return 40; default: return 56;
+    }
+  };
+
+  const headerStreak = React.useMemo(() => {
+    let best = 0;
+    for (const tr of trackers) {
+      if (tr.type !== 'check') continue;
+      const s = parseInt(streaks[tr.id], 10);
+      if (!isNaN(s) && s > best) best = s;
+    }
+    return best;
+  }, [trackers, streaks]);
+
+  const headerScrollRef = React.useRef(null);
+  const bodyScrollRef = React.useRef(null);
+  const totalsScrollRef = React.useRef(null);
+  const syncing = React.useRef(false);
+  const onAnyHScroll = (src) => (e) => {
+    if (syncing.current) return;
+    syncing.current = true;
+    const left = e.target.scrollLeft;
+    [headerScrollRef, bodyScrollRef, totalsScrollRef].forEach(r => {
+      if (r.current && r.current !== src) r.current.scrollLeft = left;
+    });
+    requestAnimationFrame(() => { syncing.current = false; });
+  };
+
+  const trackerColsTemplate = trackers.map(colWidth).map(w => `${w}px`).join(' ');
+  const trackerRowMinWidth = trackers.reduce((sum, tr) => sum + colWidth(tr), 0) + 16;
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, paddingTop: 54, boxSizing: 'border-box' }}>
+      {/* Header */}
+      <div style={{ padding: '14px 18px 14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 30, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1 }}>
+          {monthName}{' '}<span style={{ color: theme.dim, fontWeight: 300 }}>{year}</span>
+        </h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: 'transparent', border: `1px solid ${theme.rule}`, color: theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+              <rect x="1" y="6" width="2" height="3" fill="currentColor"/>
+              <rect x="4" y="3" width="2" height="6" fill="currentColor"/>
+              <rect x="7" y="1" width="2" height="8" fill="currentColor"/>
+            </svg>
+            {headerStreak}d
+          </button>
+          <HeaderIconBtn theme={theme} onClick={onAddTracker} aria="Add tracker">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 3V11M3 7H11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+            </svg>
+          </HeaderIconBtn>
+          <HeaderIconBtn theme={theme} onClick={onOpenSettings} aria="Settings">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="3" cy="7" r="1" fill="currentColor"/>
+              <circle cx="7" cy="7" r="1" fill="currentColor"/>
+              <circle cx="11" cy="7" r="1" fill="currentColor"/>
+            </svg>
+          </HeaderIconBtn>
+        </div>
+      </div>
+
+      {/* Column headers */}
+      <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, alignItems: 'end', padding: '6px 0 8px 0', borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim }}>
+        <div style={{ paddingLeft: 18 }} />
+        <div ref={headerScrollRef} onScroll={onAnyHScroll(headerScrollRef.current)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, minWidth: trackerRowMinWidth }}>
+            {trackers.map(tr => (
+              <div key={tr.id} onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }} onClick={() => onColumnLongPress(tr.id)} style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+                {tr.name}
+              </div>
+            ))}
+            <div />
+          </div>
+        </div>
+      </div>
+
+      {/* Grid body */}
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, overflow: 'hidden' }}>
+        <div style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr` }}>
+          {/* Sticky date column */}
+          <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: 14, paddingRight: 0, borderRight: `1px solid ${theme.rule}` }}>
+            {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
+              const wd = new Date(year, month, d).getDay();
+              const isWeekend = wd === 0 || wd === 6;
+              const isToday = d === todayD;
+              const isFuture = todayD != null && d > todayD;
+              const dayLetter = DAY_LETTERS[wd];
+              const rowFaint = isFuture ? theme.faint : theme.dim;
+              return (
+                <div key={d} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', borderBottom: `1px solid ${theme.rule}`, fontVariantNumeric: 'tabular-nums', fontSize: 11, background: isWeekend ? theme.stripe : 'transparent' }}>
+                  {isToday ? (
+                    <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(d)}</span>
+                  ) : (
+                    <span style={{ color: rowFaint, justifySelf: 'center', fontWeight: 400 }}>{pad2(d)}</span>
+                  )}
+                  <span style={{ color: theme.faint, fontSize: 10, justifySelf: 'center' }}>{dayLetter}</span>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Scrollable tracker columns */}
+          <div ref={bodyScrollRef} onScroll={onAnyHScroll(bodyScrollRef.current)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: trackerRowMinWidth }}>
+              {Array.from({ length: dim }, (_, i) => i + 1).map(d => {
+                const wd = new Date(year, month, d).getDay();
+                const isWeekend = wd === 0 || wd === 6;
+                const dKey = dateKey(year, month, d);
+                const isFuture = todayD != null && d > todayD;
+                return (
+                  <div key={d} style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, flex: 1, minHeight: 0, borderBottom: `1px solid ${theme.rule}`, color: isFuture ? theme.faint : theme.text, fontSize: 11, letterSpacing: '0.01em', background: isWeekend ? theme.stripe : 'transparent' }}>
+                    {trackers.map(tr => {
+                      const raw = data[dKey]?.[tr.id];
+                      const display = displayValue(tr, raw);
+                      const empty = !display;
+                      return (
+                        <div key={tr.id}
+                             onClick={() => onCellTap(tr.id, dKey)}
+                             onContextMenu={(e) => { e.preventDefault(); startLongPress(tr.id, dKey); }}
+                             onTouchStart={() => startLongPress(tr.id, dKey)}
+                             onTouchEnd={cancelLongPress}
+                             onTouchMove={cancelLongPress}
+                             onMouseDown={() => startLongPress(tr.id, dKey)}
+                             onMouseUp={cancelLongPress}
+                             onMouseLeave={cancelLongPress}
+                             style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0 4px', color: empty ? theme.faint : (isFuture ? theme.faint : theme.text), fontVariantNumeric: 'tabular-nums', cursor: 'pointer', userSelect: 'none', whiteSpace: 'nowrap' }}>
+                          {empty ? '·' : display}
+                        </div>
+                      );
+                    })}
+                    <div />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Totals row */}
+        <div style={{ display: 'grid', gridTemplateColumns: `${DATE_COL_WIDTH}px 1fr`, borderTop: `2px solid ${theme.text}`, marginTop: 4, flexShrink: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingLeft: 14, paddingRight: 0, height: 26, fontSize: 11, color: theme.text, fontWeight: 600, borderRight: `1px solid ${theme.rule}` }}>Σ</div>
+          <div ref={totalsScrollRef} onScroll={onAnyHScroll(totalsScrollRef.current)} style={{ overflowX: 'auto', overflowY: 'hidden', scrollbarWidth: 'none' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: `${trackerColsTemplate} 16px`, minWidth: trackerRowMinWidth, height: 26, alignItems: 'center', fontSize: 10 }}>
+              {trackers.map(tr => (
+                <div key={tr.id} style={{ textAlign: 'center', padding: '0 4px', color: theme.text, fontVariantNumeric: 'tabular-nums', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  {totals[tr.id] || '·'}
+                </div>
+              ))}
+              <div />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom toolbar — ‹ TODAY › centered, ~60% width */}
+      <div style={{ padding: '10px 14px 22px 14px', display: 'flex', justifyContent: 'center', alignItems: 'center', borderTop: `1px solid ${theme.rule}`, background: theme.bg }}>
+        <div style={{ width: '60%', display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ToolbarBtn theme={theme} onClick={onPrev} aria="Previous month">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7L9 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </ToolbarBtn>
+          <button onClick={onToday} style={{ flex: 1, height: 36, borderRadius: 8, border: 'none', background: theme.text, color: theme.bg, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.18em', fontWeight: 600, cursor: 'pointer' }}>TODAY</button>
+          <ToolbarBtn theme={theme} onClick={onNext} aria="Next month">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 3L9 7L5 11" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+          </ToolbarBtn>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ToolbarBtn({ theme, onClick, children, aria }) {
+  return (
+    <button onClick={onClick} aria-label={aria} style={{ width: 36, height: 36, border: `1px solid ${theme.rule}`, background: theme.bg, color: theme.text, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>{children}</button>
+  );
+}
+function HeaderIconBtn({ theme, onClick, children, aria }) {
+  return (
+    <button onClick={onClick} aria-label={aria} style={{ width: 30, height: 30, border: `1px solid ${theme.rule}`, background: 'transparent', color: theme.text, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>{children}</button>
+  );
+}
+
+window.MainScreen = MainScreen;
+</script>
+
+<!-- ── app.jsx ───────────────────────────────────────────────── -->
+<script type="text/babel">
+const { useState, useEffect, useRef, useMemo, useCallback } = React;
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "themeMode": "light",
+  "fontMode": "mono",
+  "accent": "#E5234B"
+}/*EDITMODE-END*/;
+
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAY_LETTERS = ['S','M','T','W','T','F','S'];
+const pad2 = (n) => String(n).padStart(2, '0');
+const daysInMonth = (y, m) => new Date(y, m + 1, 0).getDate();
+const firstWeekday = (y, m) => new Date(y, m, 1).getDay();
+
+const FAKE_TODAY = { y: 2026, m: 1, d: 12 };
+
+const TYPE_META = {
+  time:     { label: 'Time of day',  unitLabel: '',     placeholder: '7:30 AM' },
+  check:    { label: 'Yes / No',     unitLabel: '',     placeholder: '×' },
+  weight:   { label: 'Weight',       unitLabel: 'kg',   placeholder: '70.0 kg' },
+  counter:  { label: 'Counter',      unitLabel: '',     placeholder: '2' },
+  distance: { label: 'Distance',     unitLabel: 'km',   placeholder: '5.0 km' },
+  duration: { label: 'Duration',     unitLabel: 'min',  placeholder: '30 min' },
+  mood:     { label: 'Mood (1–5)',   unitLabel: '',     placeholder: '4' },
+};
+
+const DEFAULT_TRACKERS = [
+  { id: 't1', name: 'WAKE',  type: 'time'     },
+  { id: 't2', name: 'READ',  type: 'check'    },
+  { id: 't3', name: 'WGHT',  type: 'weight',  unit: 'kg' },
+  { id: 't4', name: 'CAFF',  type: 'counter'  },
+  { id: 't5', name: 'RUN',   type: 'distance', unit: 'km' },
+];
+
+const DEMO_DATA = {
+  '2026-02-01': { t1: '7:15 AM', t2: '×', t3: '70.5', t4: '1', t5: '12.0' },
+  '2026-02-02': { t1: '7:18 AM', t2: '×', t3: '70.3', t4: '2', t5: ''     },
+  '2026-02-03': { t1: '7:34 AM', t2: '×', t3: '70.4', t4: '2', t5: '8.0'  },
+  '2026-02-04': { t1: '7:30 AM', t2: '',  t3: '70.3', t4: '1', t5: ''     },
+  '2026-02-05': { t1: '7:26 AM', t2: '×', t3: '69.9', t4: '2', t5: '5.4'  },
+  '2026-02-06': { t1: '7:05 AM', t2: '×', t3: '70.2', t4: '2', t5: ''     },
+  '2026-02-07': { t1: '7:56 AM', t2: '',  t3: '70.1', t4: '2', t5: ''     },
+  '2026-02-08': { t1: '7:47 AM', t2: '×', t3: '69.9', t4: '2', t5: '14.0' },
+  '2026-02-09': { t1: '7:10 AM', t2: '×', t3: '70.3', t4: '1', t5: ''     },
+  '2026-02-10': { t1: '7:22 AM', t2: '',  t3: '70.0', t4: '2', t5: '10.0' },
+  '2026-02-11': { t1: '7:26 AM', t2: '×', t3: '70.1', t4: '2', t5: ''     },
+  '2026-02-12': { t1: '7:30 AM', t2: '×', t3: '70.2', t4: '2', t5: '6.5'  },
+};
+
+const dateKey = (y, m, d) => `${y}-${pad2(m+1)}-${pad2(d)}`;
+
+function displayValue(tracker, raw) {
+  if (raw === undefined || raw === null || raw === '') return '';
+  switch (tracker.type) {
+    case 'time':     return raw;
+    case 'check':    return '×';
+    case 'weight':   return `${raw} ${tracker.unit || 'kg'}`;
+    case 'counter':  return String(raw);
+    case 'distance': return `${raw} ${tracker.unit || 'km'}`;
+    case 'duration': return `${raw} min`;
+    case 'mood':     return String(raw);
+    default:         return String(raw);
+  }
+}
+
+function parseTimeToMin(s) {
+  if (!s) return null;
+  const m = String(s).trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)?$/i);
+  if (!m) return null;
+  let h = parseInt(m[1],10), mn = parseInt(m[2],10);
+  const ap = (m[3] || '').toUpperCase();
+  if (ap === 'PM' && h < 12) h += 12;
+  if (ap === 'AM' && h === 12) h = 0;
+  return h*60 + mn;
+}
+function minToTime(min) {
+  let h = Math.floor(min/60), mn = min%60;
+  const ap = h >= 12 ? 'PM' : 'AM';
+  let hh = h % 12; if (hh === 0) hh = 12;
+  return `${hh}:${pad2(mn)} ${ap}`;
+}
+
+function App() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+  const [screen, setScreen] = useState('onboarding');
+  const [year, setYear]   = useState(2026);
+  const [month, setMonth] = useState(1);
+  const [trackers, setTrackers] = useState(DEFAULT_TRACKERS);
+  const [data, setData] = useState(DEMO_DATA);
+  const [editingTrackerId, setEditingTrackerId] = useState(null);
+  const [editingDay, setEditingDay] = useState(null);
+  const [longPressTarget, setLongPressTarget] = useState(null);
+  const [statsOpen, setStatsOpen] = useState(false);
+
+  const systemDark = React.useMemo(() => {
+    return typeof window !== 'undefined' && window.matchMedia
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches : false;
+  }, []);
+  const dark = (t.themeMode === 'dark') || (t.themeMode === 'system' && systemDark);
+  const accent = t.accent || '#E5234B';
+  const fontMono = (t.fontMode || 'mono') === 'mono';
+
+  const theme = dark
+    ? { bg: '#0B0B0C', surface: '#0B0B0C', card: '#141416', text: '#F5F5F5', dim: '#8A8A8E', faint: '#3A3A3D', rule: '#1F1F22', stripe: '#0E0E10', accent }
+    : { bg: '#FFFFFF', surface: '#FFFFFF', card: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#FAFAFA', accent };
+
+  const fontStack = fontMono
+    ? `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`
+    : `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+
+  const lpTimer = useRef(null);
+  const startLongPress = (trackerId, dKey) => {
+    clearTimeout(lpTimer.current);
+    lpTimer.current = setTimeout(() => setLongPressTarget({ trackerId, dateKey: dKey }), 450);
+  };
+  const cancelLongPress = () => clearTimeout(lpTimer.current);
+
+  const handleCellTap = (trackerId, dKey) => setEditingDay(dKey);
+
+  const setValue = (dKey, trackerId, value) => {
+    setData(prev => ({ ...prev, [dKey]: { ...(prev[dKey] || {}), [trackerId]: value } }));
+  };
+  const setDayValues = (dKey, values) => {
+    setData(prev => ({ ...prev, [dKey]: { ...(prev[dKey] || {}), ...values } }));
+  };
+
+  const upsertTracker = (tracker) => {
+    setTrackers(prev => {
+      const idx = prev.findIndex(p => p.id === tracker.id);
+      if (idx === -1) return [...prev, tracker];
+      const next = [...prev]; next[idx] = tracker; return next;
+    });
+  };
+  const removeTracker = (id) => {
+    setTrackers(prev => prev.filter(p => p.id !== id));
+    setData(prev => {
+      const out = {};
+      for (const k of Object.keys(prev)) { const { [id]: _, ...rest } = prev[k]; out[k] = rest; }
+      return out;
+    });
+  };
+
+  const stepMonth = (delta) => {
+    let m = month + delta, y = year;
+    if (m < 0) { m = 11; y--; }
+    if (m > 11) { m = 0; y++; }
+    setMonth(m); setYear(y);
+  };
+  const goToday = () => {
+    setYear(FAKE_TODAY.y); setMonth(FAKE_TODAY.m);
+    setEditingDay(dateKey(FAKE_TODAY.y, FAKE_TODAY.m, FAKE_TODAY.d));
+  };
+
+  const totals = useMemo(() => {
+    const out = {};
+    for (const tr of trackers) {
+      const vals = [];
+      for (const k of Object.keys(data)) {
+        if (!k.startsWith(`${year}-${pad2(month+1)}`)) continue;
+        const v = data[k]?.[tr.id];
+        if (v !== undefined && v !== '') vals.push(v);
+      }
+      if (tr.type === 'check')          out[tr.id] = `${vals.length}d`;
+      else if (tr.type === 'counter')   out[tr.id] = String(vals.reduce((a,b)=>a+(parseFloat(b)||0),0));
+      else if (tr.type === 'distance' || tr.type === 'duration') {
+        const sum = vals.reduce((a,b)=>a+(parseFloat(b)||0),0);
+        out[tr.id] = sum ? sum.toFixed(1) : '·';
+      } else if (tr.type === 'weight') {
+        const nums = vals.map(v => parseFloat(v)).filter(Boolean);
+        out[tr.id] = nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '·';
+      } else if (tr.type === 'time') {
+        const mins = vals.map(parseTimeToMin).filter(x => x != null);
+        out[tr.id] = mins.length ? minToTime(Math.round(mins.reduce((a,b)=>a+b,0)/mins.length)) : '·';
+      } else if (tr.type === 'mood') {
+        const nums = vals.map(v => parseFloat(v)).filter(Boolean);
+        out[tr.id] = nums.length ? (nums.reduce((a,b)=>a+b,0)/nums.length).toFixed(1) : '·';
+      } else out[tr.id] = '·';
+    }
+    return out;
+  }, [trackers, data, year, month]);
+
+  const streaks = useMemo(() => {
+    const out = {};
+    for (const tr of trackers) {
+      if (tr.type !== 'check') { out[tr.id] = ''; continue; }
+      let s = 0;
+      for (let d = FAKE_TODAY.d; d >= 1; d--) {
+        const k = dateKey(FAKE_TODAY.y, FAKE_TODAY.m, d);
+        if (data[k]?.[tr.id]) s++; else break;
+      }
+      out[tr.id] = s ? `${s}d` : '';
+    }
+    return out;
+  }, [trackers, data]);
+
+  return (
+    <div style={{ minHeight: '100vh', background: dark ? '#000' : '#F2F2F4', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px', fontFamily: fontStack }}>
+      <IOSDevice dark={dark}>
+        {screen === 'onboarding' && (
+          <Onboarding theme={theme} fontStack={fontStack}
+            fontMono={`'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`}
+            onDone={() => setScreen('main')} />
+        )}
+        {screen === 'main' && (
+          <MainScreen
+            theme={theme} fontStack={fontStack} fontMono={fontMono}
+            year={year} month={month}
+            trackers={trackers} data={data}
+            totals={totals} streaks={streaks}
+            onPrev={() => stepMonth(-1)}
+            onNext={() => stepMonth(1)}
+            onToday={goToday}
+            onAddTracker={() => setEditingTrackerId('new')}
+            onOpenSettings={() => setScreen('settings')}
+            onCellTap={handleCellTap}
+            startLongPress={startLongPress}
+            cancelLongPress={cancelLongPress}
+            onColumnLongPress={(id) => setEditingTrackerId(id)}
+            onOpenStats={() => setStatsOpen(true)}
+          />
+        )}
+        {screen === 'settings' && (
+          <Settings
+            theme={theme} trackers={trackers}
+            themeMode={t.themeMode || 'light'}
+            onThemeMode={(v) => setTweak('themeMode', v)}
+            onBack={() => setScreen('main')}
+            onEditTracker={(id) => setEditingTrackerId(id)}
+            onAddTracker={() => setEditingTrackerId('new')}
+            onRemoveTracker={removeTracker}
+          />
+        )}
+        {editingTrackerId && (
+          <TrackerEditor
+            theme={theme}
+            tracker={editingTrackerId === 'new' ? null : trackers.find(x => x.id === editingTrackerId)}
+            existingIds={trackers.map(t => t.id)}
+            onClose={() => setEditingTrackerId(null)}
+            onSave={(tr) => { upsertTracker(tr); setEditingTrackerId(null); }}
+            onDelete={(id) => { removeTracker(id); setEditingTrackerId(null); }}
+          />
+        )}
+        {editingDay && (
+          <DayDetailSheet
+            theme={theme}
+            dKey={editingDay}
+            trackers={trackers}
+            values={data[editingDay] || {}}
+            onClose={() => setEditingDay(null)}
+            onSave={(values) => { setDayValues(editingDay, values); setEditingDay(null); }}
+          />
+        )}
+        {longPressTarget && (
+          <QuickActionMenu
+            theme={theme}
+            target={longPressTarget}
+            tracker={trackers.find(x => x.id === longPressTarget.trackerId)}
+            value={data[longPressTarget.dateKey]?.[longPressTarget.trackerId]}
+            onClose={() => setLongPressTarget(null)}
+            onClear={() => { setValue(longPressTarget.dateKey, longPressTarget.trackerId, ''); setLongPressTarget(null); }}
+            onQuickSet={(v) => { setValue(longPressTarget.dateKey, longPressTarget.trackerId, v); setLongPressTarget(null); }}
+            onEdit={() => { setEditingDay(longPressTarget.dateKey); setLongPressTarget(null); }}
+          />
+        )}
+        {statsOpen && (
+          <StatsSheet
+            theme={theme}
+            trackers={trackers}
+            data={data}
+            today={FAKE_TODAY}
+            onClose={() => setStatsOpen(false)}
+          />
+        )}
+      </IOSDevice>
+
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="Appearance" />
+        <TweakRadio label="Theme" value={t.themeMode || 'light'} options={['light', 'dark', 'system']} onChange={(v) => setTweak('themeMode', v)} />
+        <TweakRadio label="Typeface" value={t.fontMode || 'mono'} options={['mono', 'sans']} onChange={(v) => setTweak('fontMode', v)} />
+        <TweakColor label="Accent" value={t.accent || '#E5234B'} onChange={(v) => setTweak('accent', v)} />
+      </TweaksPanel>
+    </div>
+  );
+}
+
+window.App = App;
+</script>
+
+<script type="text/babel" data-presets="env,react">
+  const root = ReactDOM.createRoot(document.getElementById('root'));
+  root.render(<App />);
+</script>
+</body>
+</html>
