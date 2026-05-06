@@ -58,9 +58,17 @@ function DayDetailContent({ theme, draft, setField, y, m, d, wd, trackers, onClo
   );
 }
 
-function StatsContent({ theme, stats, bestCurrent, onClose }) {
+function StatsContent({ theme, stats, globalStreak, onClose }) {
   const t = useT();
   const animateThen = useSheetAnimate();
+  const fmtDate = (dk) => {
+    if (!dk) return '';
+    const [, m, d] = dk.split('-').map(Number);
+    return `${t.shortMonths[m - 1]} ${d}`;
+  };
+  const dateRange = globalStreak.count > 0
+    ? `${fmtDate(globalStreak.start)} – ${fmtDate(globalStreak.end)}`
+    : '—';
   return (
     <div style={{ padding: '8px 22px 22px' }}>
       <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 4 }}>{t.statsTitle}</div>
@@ -68,25 +76,25 @@ function StatsContent({ theme, stats, bestCurrent, onClose }) {
       <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, padding: '14px 16px', marginBottom: 18, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim }}>{t.longestStreak}</div>
-          <div style={{ fontSize: 11, color: theme.dim, marginTop: 4 }}>{t.acrossAllChecks}</div>
+          <div style={{ fontSize: 13, color: theme.text, marginTop: 5, fontVariantNumeric: 'tabular-nums' }}>{dateRange}</div>
         </div>
         <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 44, fontWeight: 500, color: theme.text, fontVariantNumeric: 'tabular-nums', lineHeight: 1, flexShrink: 0 }}>
-          {bestCurrent}<span style={{ fontSize: 18, color: theme.dim, marginLeft: 4 }}>{t.daySuffix}</span>
+          {globalStreak.count}<span style={{ fontSize: 18, color: theme.dim, marginLeft: 4 }}>{t.daySuffix}</span>
         </div>
       </div>
       <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim, marginBottom: 8 }}>{t.byTracker}</div>
       <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 52px 44px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
           <div></div>
           <div style={{ textAlign: 'right' }}>{t.colLog}</div>
           <div style={{ textAlign: 'right' }}>{t.colBest}</div>
           <div style={{ textAlign: 'right' }}>{t.colPct}</div>
         </div>
         {stats.map(({ tr, filled, longest, pct }, i) => (
-          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
+          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 40px 52px 44px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
             <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
-            <div style={{ textAlign: 'right' }}>{tr.type === 'check' ? `${longest}${t.daySuffix}` : '·'}</div>
+            <div style={{ textAlign: 'right' }}>{longest > 0 ? `${longest}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'right' }}>{pct}%</div>
           </div>
         ))}
@@ -204,31 +212,44 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
   );
 }
 
-export function StatsSheet({ theme, trackers, data, onClose }) {
-  const stats = trackers.map(tr => {
-    const allKeys = Object.keys(data);
-    const filled = allKeys.filter(k => { const v = data[k]?.[tr.id]; return v !== undefined && v !== null && v !== ''; });
-    let longest = 0;
-    if (tr.type === 'check') {
-      const dates = filled.map(k => k).sort();
-      let cur = 0, prev = null;
-      for (const k of dates) {
-        const [y, m, d] = k.split('-').map(Number);
-        const t = new Date(y, m - 1, d).getTime();
-        if (prev !== null && (t - prev) === 86400000) cur++;
-        else cur = 1;
-        if (cur > longest) longest = cur;
-        prev = t;
-      }
+function calcStreak(sortedKeys) {
+  let longest = 0, longestStart = null, longestEnd = null;
+  let cur = 0, curStart = null, prev = null;
+  for (const k of sortedKeys) {
+    const [y, m, d] = k.split('-').map(Number);
+    const ts = new Date(y, m - 1, d).getTime();
+    if (prev !== null && ts - prev === 86400000) {
+      cur++;
+    } else {
+      cur = 1;
+      curStart = k;
     }
+    if (cur > longest) { longest = cur; longestStart = curStart; longestEnd = k; }
+    prev = ts;
+  }
+  return { count: longest, start: longestStart, end: longestEnd };
+}
+
+export function StatsSheet({ theme, trackers, data, onClose }) {
+  // Global streak: any day where at least one tracker has a value
+  const globalDays = Object.keys(data)
+    .filter(k => Object.values(data[k]).some(v => v !== '' && v != null))
+    .sort();
+  const globalStreak = calcStreak(globalDays);
+
+  // Per-tracker: streak of consecutive days logged (any value), for all types
+  const stats = trackers.map(tr => {
+    const filled = Object.keys(data)
+      .filter(k => { const v = data[k]?.[tr.id]; return v !== undefined && v !== null && v !== ''; })
+      .sort();
+    const { count: longest } = calcStreak(filled);
     const pct = Math.round((filled.length / 365) * 100);
     return { tr, filled: filled.length, longest, pct };
   });
-  const bestCurrent = stats.reduce((m, s) => Math.max(m, s.tr.type === 'check' ? s.longest : 0), 0);
 
   return (
     <SheetOverlay theme={theme} onClose={onClose}>
-      <StatsContent theme={theme} stats={stats} bestCurrent={bestCurrent} onClose={onClose} />
+      <StatsContent theme={theme} stats={stats} globalStreak={globalStreak} onClose={onClose} />
     </SheetOverlay>
   );
 }
