@@ -56,7 +56,7 @@ export const TRANSLATIONS = {
     timeFormat: 'TIME FORMAT', time12h: '12H', time24h: '24H',
     amoled: 'AMOLED',
     typeMeta: {
-      time:     { label: 'Time of day',  placeholder: '7:30 AM' },
+      time:     { label: 'Time of day',  placeholder: '07:30' },
       check:    { label: 'Yes / No',     placeholder: '×' },
       weight:   { label: 'Weight',       placeholder: '70.0 kg' },
       counter:  { label: 'Counter',      placeholder: '2' },
@@ -117,7 +117,7 @@ export const TRANSLATIONS = {
     timeFormat: 'ΜΟΡΦΗ ΩΡΑΣ', time12h: '12Ω', time24h: '24Ω',
     amoled: 'AMOLED',
     typeMeta: {
-      time:     { label: 'Ώρα',       placeholder: '7:30 π.μ.' },
+      time:     { label: 'Ώρα',       placeholder: '07:30' },
       check:    { label: 'Ναι / Όχι', placeholder: '×' },
       weight:   { label: 'Βάρος',     placeholder: '70.0 kg' },
       counter:  { label: 'Μετρητής',  placeholder: '2' },

@@ -151,6 +151,23 @@ function TrackerInput({ theme, tracker, value, onChange }) {
       </div>
     );
   }
+  if (tracker.type === 'time') {
+    const handleTimeChange = (e) => {
+      const digits = e.target.value.replace(/\D/g, '').slice(0, 4);
+      onChange(digits.length <= 2 ? digits : digits.slice(0, 2) + ':' + digits.slice(2));
+    };
+    const handleTimeBlur = () => {
+      const digits = v.replace(/\D/g, '');
+      if (!digits) { onChange(''); return; }
+      const h = Math.min(parseInt(digits.slice(0, 2) || '0', 10), 23);
+      const m = Math.min(parseInt(digits.slice(2, 4) || '0', 10), 59);
+      onChange(`${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`);
+    };
+    return (
+      <input value={v} onChange={handleTimeChange} onBlur={handleTimeBlur}
+        placeholder="07:30" inputMode="numeric" style={inputStyle(theme)} />
+    );
+  }
   const placeholder = t.typeMeta[tracker.type]?.placeholder || '';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
