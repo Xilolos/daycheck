@@ -8,6 +8,19 @@
   <link rel="apple-touch-icon" href="/logo.jpg"/>
   <link rel="manifest" href="/manifest.json"/>
   <meta name="theme-color" content="#ffffff"/>
+  <script>
+    (function(){
+      try {
+        var mode = localStorage.getItem('dc_themeMode') || 'system';
+        var amoled = localStorage.getItem('dc_amoled') === 'true';
+        var sysDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var dark = mode === 'dark' || (mode === 'system' && sysDark);
+        var bg = dark ? (amoled ? '#000000' : '#0B0B0C') : '#ffffff';
+        document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+        document.body && (document.body.style.background = bg);
+      } catch(e){}
+    })();
+  </script>
   <meta name="mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="default"/>

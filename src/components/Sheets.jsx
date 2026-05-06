@@ -6,17 +6,14 @@ import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
 
 const F = 'rgba(0,0,0,0.48)';
+const EYE = <><circle cx="9" cy="10" r="1.4" fill={F}/><circle cx="15" cy="10" r="1.4" fill={F}/></>;
+// SVG Y increases downward: frown = control point ABOVE endpoints (lower Y); smile = control point BELOW endpoints (higher Y)
 const MOOD_FACE = {
-  // red – very sad: angry brows + deep frown
-  '1': <><path d="M7 8L10.5 10" stroke={F} strokeWidth="1.7" strokeLinecap="round"/><path d="M17 8L13.5 10" stroke={F} strokeWidth="1.7" strokeLinecap="round"/><circle cx="9.5" cy="11.5" r="1.4" fill={F}/><circle cx="14.5" cy="11.5" r="1.4" fill={F}/><path d="M6.5 18Q12 23.5 17.5 18" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
-  // orange – sad: plain eyes + moderate frown
-  '2': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M7.5 17Q12 21 16.5 17" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
-  // white – neutral: plain eyes + flat mouth
-  '3': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M8.5 15.5H15.5" stroke={F} strokeWidth="1.9" strokeLinecap="round"/></>,
-  // blue – happy: plain eyes + moderate smile
-  '4': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M7.5 15Q12 10.5 16.5 15" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
-  // green – very happy: squinting arcs + big wide smile
-  '5': <><path d="M7 10.5Q9.5 7.5 12 10.5" stroke={F} strokeWidth="1.7" strokeLinecap="round" fill="none"/><path d="M12 10.5Q14.5 7.5 17 10.5" stroke={F} strokeWidth="1.7" strokeLinecap="round" fill="none"/><path d="M5.5 15Q12 8 18.5 15" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
+  '1': <>{EYE}<path d="M6.5 17Q12 10 17.5 17" stroke={F} strokeWidth="2" strokeLinecap="round" fill="none"/></>,
+  '2': <>{EYE}<path d="M7.5 16.5Q12 12.5 16.5 16.5" stroke={F} strokeWidth="2" strokeLinecap="round" fill="none"/></>,
+  '3': <>{EYE}<path d="M8 15H16" stroke={F} strokeWidth="2" strokeLinecap="round"/></>,
+  '4': <>{EYE}<path d="M7.5 14.5Q12 18.5 16.5 14.5" stroke={F} strokeWidth="2" strokeLinecap="round" fill="none"/></>,
+  '5': <>{EYE}<path d="M6 14Q12 21 18 14" stroke={F} strokeWidth="2" strokeLinecap="round" fill="none"/></>,
 };
 
 export function DayDetailSheet({ theme, dKey, trackers, values, onClose, onSave }) {
