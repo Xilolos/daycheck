@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef, useState, useEffect } from 'react';
 import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
 import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
@@ -7,7 +7,7 @@ import { Icon } from '../icons';
 const DATE_COL_WIDTH = 56;
 const COL_HEADER_H = 28; // paddingTop(6) + icon(14) + paddingBottom(8)
 
-export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress }) {
+export default function MainScreen({ theme, fontStack, year, month, trackers, data, totals, todayColor, onPrev, onNext, onToday, onAddTracker, onOpenSettings, onOpenStats, onCellTap, startLongPress, cancelLongPress, onColumnLongPress, onReorderTrackers }) {
   const t = useT();
   const dim = daysInMonth(year, month);
   const todayD = (year === TODAY.y && month === TODAY.m) ? TODAY.d : null;
@@ -33,6 +33,54 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
   const trackerColsTemplate = trackers.map(() => `minmax(${COL_MIN}px, 1fr)`).join(' ');
 
   const days = Array.from({ length: dim }, (_, i) => i + 1);
+
+  // Drag-to-reorder column headers
+  const headerGridRef = useRef(null);
+  const dragState = useRef({ active: false, wasDrag: false, srcIdx: null, dropIdx: null });
+  const latestTrackers = useRef(trackers);
+  latestTrackers.current = trackers;
+  const [dndVisual, setDndVisual] = useState({ dragIdx: null, dropIdx: null });
+
+  useEffect(() => {
+    const el = headerGridRef.current;
+    if (!el) return;
+    const getColIdx = (clientX) => {
+      const rect = el.getBoundingClientRect();
+      const x = clientX - rect.left;
+      const colW = rect.width / latestTrackers.current.length;
+      return Math.max(0, Math.min(latestTrackers.current.length - 1, Math.floor(x / colW)));
+    };
+    const onMove = (e) => {
+      if (!dragState.current.active) return;
+      const idx = getColIdx(e.touches[0].clientX);
+      if (!dragState.current.wasDrag && idx !== dragState.current.srcIdx) {
+        dragState.current.wasDrag = true;
+      }
+      if (dragState.current.wasDrag) e.preventDefault();
+      dragState.current.dropIdx = idx;
+      setDndVisual({ dragIdx: dragState.current.srcIdx, dropIdx: idx });
+    };
+    const onEnd = () => {
+      if (!dragState.current.active) return;
+      const { srcIdx, dropIdx, wasDrag } = dragState.current;
+      dragState.current = { active: false, wasDrag: false, srcIdx: null, dropIdx: null };
+      setDndVisual({ dragIdx: null, dropIdx: null });
+      if (wasDrag && srcIdx != null && dropIdx != null && srcIdx !== dropIdx) {
+        const next = [...latestTrackers.current];
+        const [item] = next.splice(srcIdx, 1);
+        next.splice(dropIdx, 0, item);
+        onReorderTrackers?.(next);
+      }
+    };
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd);
+    el.addEventListener('touchcancel', onEnd);
+    return () => {
+      el.removeEventListener('touchmove', onMove);
+      el.removeEventListener('touchend', onEnd);
+      el.removeEventListener('touchcancel', onEnd);
+    };
+  }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
@@ -102,18 +150,32 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           <div style={{ display: 'flex', flexDirection: 'column', height: '100%', minWidth: trackers.length * COL_MIN }}>
 
             {/* Column headers */}
-            <div style={{ height: COL_HEADER_H, flexShrink: 0, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'flex-end', paddingBottom: 8, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim }}>
-              {trackers.map(tr => (
-                <div key={tr.id}
-                  onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
-                  onClick={() => onColumnLongPress(tr.id)}
-                  style={{ textAlign: 'center', padding: '0 4px', cursor: 'pointer', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {tr.icon
-                    ? <Icon id={tr.icon} size={14} />
-                    : <span style={{ textTransform: 'uppercase', whiteSpace: 'nowrap', fontSize: 10, letterSpacing: '0.08em' }}>{tr.name}</span>
-                  }
-                </div>
-              ))}
+            <div ref={headerGridRef} style={{ height: COL_HEADER_H, flexShrink: 0, display: 'grid', gridTemplateColumns: trackerColsTemplate, alignItems: 'flex-end', paddingBottom: 8, borderBottom: `1px solid ${theme.rule}`, fontSize: 10, letterSpacing: '0.08em', color: theme.dim }}>
+              {trackers.map((tr, colIdx) => {
+                const isDragging = dndVisual.dragIdx === colIdx;
+                const isDropTarget = dndVisual.dropIdx === colIdx && dndVisual.dragIdx !== colIdx;
+                return (
+                  <div key={tr.id}
+                    onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
+                    onTouchStart={() => {
+                      dragState.current = { active: true, wasDrag: false, srcIdx: colIdx, dropIdx: colIdx };
+                    }}
+                    onClick={() => { if (!dragState.current.wasDrag) onColumnLongPress(tr.id); }}
+                    style={{
+                      textAlign: 'center', padding: '0 4px', cursor: 'grab', overflow: 'hidden',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      opacity: isDragging ? 0.3 : 1,
+                      borderLeft: isDropTarget ? `2px solid ${theme.accent}` : '2px solid transparent',
+                      transition: 'opacity 0.1s',
+                      userSelect: 'none',
+                    }}>
+                    {tr.icon
+                      ? <Icon id={tr.icon} size={14} />
+                      : <span style={{ textTransform: 'uppercase', whiteSpace: 'nowrap', fontSize: 10, letterSpacing: '0.08em' }}>{tr.name}</span>
+                    }
+                  </div>
+                );
+              })}
             </div>
 
             {/* Data rows */}

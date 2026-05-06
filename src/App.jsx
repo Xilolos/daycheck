@@ -342,6 +342,7 @@ export default function App() {
             onCellTap={handleCellTap}
             startLongPress={startLongPress} cancelLongPress={cancelLongPress}
             onColumnLongPress={(id) => setEditingTrackerId(id)}
+            onReorderTrackers={reorderTrackers}
             onOpenStats={() => setStatsOpen(true)}
           />
         {screen === 'settings' && (
