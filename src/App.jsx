@@ -145,13 +145,10 @@ export default function App() {
     : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#EFEFF2', accent };
 
   useEffect(() => {
+    document.documentElement.style.background = theme.bg;
     document.body.style.background = theme.bg;
-    const existing = document.querySelector('meta[name="theme-color"]');
-    if (existing) existing.remove();
-    const meta = document.createElement('meta');
-    meta.name = 'theme-color';
-    meta.content = theme.bg;
-    document.head.appendChild(meta);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme.bg);
   }, [theme.bg]);
 
   const fontStack = `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`;

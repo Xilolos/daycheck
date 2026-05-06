@@ -17,6 +17,7 @@
         var dark = mode === 'dark' || (mode === 'system' && sysDark);
         var bg = dark ? (amoled ? '#000000' : '#0B0B0C') : '#ffffff';
         document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+        document.documentElement.style.background = bg;
         document.body && (document.body.style.background = bg);
       } catch(e){}
     })();
