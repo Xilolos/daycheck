@@ -84,17 +84,19 @@ function StatsContent({ theme, stats, globalStreak, onClose }) {
       </div>
       <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim, marginBottom: 8 }}>{t.byTracker}</div>
       <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 40px 52px 44px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 36px 44px 44px 40px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
           <div></div>
           <div style={{ textAlign: 'right' }}>{t.colLog}</div>
           <div style={{ textAlign: 'right' }}>{t.colBest}</div>
+          <div style={{ textAlign: 'right' }}>{t.colCur}</div>
           <div style={{ textAlign: 'right' }}>{t.colPct}</div>
         </div>
-        {stats.map(({ tr, filled, longest, pct }, i) => (
-          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 40px 52px 44px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
+        {stats.map(({ tr, filled, longest, current, pct }, i) => (
+          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 36px 44px 44px 40px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
             <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
             <div style={{ textAlign: 'right' }}>{longest > 0 ? `${longest}${t.daySuffix}` : '·'}</div>
+            <div style={{ textAlign: 'right', color: current > 0 ? theme.text : theme.faint }}>{current > 0 ? `${current}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'right' }}>{pct}%</div>
           </div>
         ))}
@@ -212,6 +214,24 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
   );
 }
 
+function calcCurrentStreak(sortedKeys) {
+  if (sortedKeys.length === 0) return 0;
+  const todayTs = new Date(TODAY.y, TODAY.m, TODAY.d).getTime();
+  const yesterdayTs = todayTs - 86400000;
+  const lastKey = sortedKeys[sortedKeys.length - 1];
+  const [ly, lm, ld] = lastKey.split('-').map(Number);
+  const lastTs = new Date(ly, lm - 1, ld).getTime();
+  if (lastTs < yesterdayTs) return 0;
+  let cur = 0, prev = null;
+  for (let i = sortedKeys.length - 1; i >= 0; i--) {
+    const [y, m, d] = sortedKeys[i].split('-').map(Number);
+    const ts = new Date(y, m - 1, d).getTime();
+    if (prev === null || prev - ts === 86400000) { cur++; prev = ts; }
+    else break;
+  }
+  return cur;
+}
+
 function calcStreak(sortedKeys) {
   let longest = 0, longestStart = null, longestEnd = null;
   let cur = 0, curStart = null, prev = null;
@@ -243,8 +263,9 @@ export function StatsSheet({ theme, trackers, data, onClose }) {
       .filter(k => { const v = data[k]?.[tr.id]; return v !== undefined && v !== null && v !== ''; })
       .sort();
     const { count: longest } = calcStreak(filled);
+    const current = calcCurrentStreak(filled);
     const pct = Math.round((filled.length / 365) * 100);
-    return { tr, filled: filled.length, longest, pct };
+    return { tr, filled: filled.length, longest, current, pct };
   });
 
   return (
