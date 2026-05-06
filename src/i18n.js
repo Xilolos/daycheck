@@ -111,7 +111,7 @@ export const TRANSLATIONS = {
     termsNote: 'Συνεχίζοντας, αποδέχεστε τους όρους.',
     checkEmailNote: 'Ελέγξτε το email σας για επιβεβαίωση.',
     signInBtn: 'ΣΥΝΔΕΣΗ', createAccountBtn: 'ΔΗΜΙΟΥΡΓΙΑ',
-    themeReloadNote: 'Επαναφόρτωση κατά την αλλαγή θέματος',
+    themeReloadNote: 'Επαναφορτωση κατα την αλλαγη θεματος',
     timeFormat: 'ΜΟΡΦΗ ΩΡΑΣ', time12h: '12Ω', time24h: '24Ω',
     amoled: 'AMOLED',
     typeMeta: {
