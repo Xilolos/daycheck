@@ -32,7 +32,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
             {[['en', 'EN'], ['el', 'ΕΛ']].map(([code, label]) => (
               <button key={code} onClick={() => onLang(code)} style={{
                 padding: '10px 0', borderRadius: 6, cursor: 'pointer',
-                border: `1px solid ${lang === code ? theme.text : theme.rule}`,
+                border: `1px solid ${lang === code ? theme.text : theme.faint}`,
                 background: lang === code ? theme.text : 'transparent',
                 color: lang === code ? theme.bg : theme.text,
                 fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
@@ -47,7 +47,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
             {['light', 'dark', 'system'].map(opt => (
               <button key={opt} onClick={() => onThemeMode(opt)} style={{
                 padding: '10px 0', borderRadius: 6, cursor: 'pointer',
-                border: `1px solid ${themeMode === opt ? theme.text : theme.rule}`,
+                border: `1px solid ${themeMode === opt ? theme.text : theme.faint}`,
                 background: themeMode === opt ? theme.text : 'transparent',
                 color: themeMode === opt ? theme.bg : theme.text,
                 fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em', textTransform: 'uppercase',
@@ -57,7 +57,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
           {darkActive && (
             <button onClick={() => onAmoled(!amoled)} style={{
               marginTop: 6, width: '100%', padding: '10px 0', borderRadius: 6, cursor: 'pointer',
-              border: `1px solid ${amoled ? theme.text : theme.rule}`,
+              border: `1px solid ${amoled ? theme.text : theme.faint}`,
               background: amoled ? theme.text : 'transparent',
               color: amoled ? theme.bg : theme.text,
               fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
@@ -195,7 +195,7 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
   const onDragEnd = () => { commit(dragIdx, overIdx); setDragIdx(null); setOverIdx(null); };
 
   return (
-    <div ref={listRef} style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
+    <div ref={listRef} style={{ border: `1px solid ${theme.faint}`, borderRadius: 8, overflow: 'hidden' }}>
       {trackers.map((tr, i) => {
         const isDragging = dragIdx === i;
         const isOver = overIdx === i && dragIdx !== i;

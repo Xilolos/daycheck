@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
 import { DEFAULT_TRACKERS } from './constants';
 import { LangContext, TRANSLATIONS } from './i18n';
 import { pad2, dateKey, parseTimeToMin, minToTime, TODAY } from './utils';
@@ -144,11 +144,15 @@ export default function App() {
       : { bg: '#0B0B0C', text: '#F5F5F5', dim: '#8A8A8E', faint: '#3A3A3D', rule: '#1F1F22', stripe: '#141418', accent })
     : { bg: '#FFFFFF', text: '#0A0A0B', dim: '#9A9A9F', faint: '#D7D7DB', rule: '#ECECEE', stripe: '#EFEFF2', accent };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     document.documentElement.style.background = theme.bg;
     document.body.style.background = theme.bg;
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute('content', theme.bg);
+    const existing = document.querySelector('meta[name="theme-color"]');
+    if (existing) existing.remove();
+    const meta = document.createElement('meta');
+    meta.name = 'theme-color';
+    meta.content = theme.bg;
+    document.head.appendChild(meta);
   }, [theme.bg]);
 
   const fontStack = `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`;
