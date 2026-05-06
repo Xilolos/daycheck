@@ -122,7 +122,7 @@ const ICON_SET = {
     <><path d="M3 12C5 7.5 8.5 5.5 12 5.5s7 2 9 6.5c-2 4.5-5.5 6.5-9 6.5S5 16.5 3 12z"/><circle cx="12" cy="12" r="3"/></>,
 
   scale:
-    <><line x1="12" y1="5" x2="12" y2="20"/><line x1="6" y1="20" x2="18" y2="20"/><line x1="3" y1="9" x2="21" y2="9"/><path d="M3 9c0 3 2 5 4.5 5S12 12 12 9"/><path d="M12 9c0 3 2 5 4.5 5S21 12 21 9"/></>,
+    <><rect x="2" y="7" width="20" height="13" rx="4"/><rect x="7" y="11" width="10" height="5" rx="1.5"/></>,
 };
 
 export const ICON_KEYS = Object.keys(ICON_SET);
