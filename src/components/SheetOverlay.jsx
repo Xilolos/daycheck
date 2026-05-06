@@ -66,7 +66,7 @@ export default function SheetOverlay({ theme, children, onClose, small }) {
             width: '100%', background: theme.bg, color: theme.text,
             borderTopLeftRadius: 20, borderTopRightRadius: 20,
             borderTop: `1px solid ${theme.rule}`, borderLeft: `1px solid ${theme.rule}`, borderRight: `1px solid ${theme.rule}`,
-            maxHeight: small ? '50%' : '85%', overflowY: 'auto',
+            maxHeight: small ? '50%' : '85%', overflowY: 'auto', overscrollBehavior: 'none',
             boxShadow: '0 -2px 40px rgba(0,0,0,0.18)',
             transform: open ? `translateY(${dragY}px)` : 'translateY(100%)',
             transition: dragY > 0 ? 'none' : (open

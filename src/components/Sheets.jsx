@@ -5,12 +5,18 @@ import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
 
+const F = 'rgba(0,0,0,0.48)';
 const MOOD_FACE = {
-  '1': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M7 15Q12 19 17 15" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
-  '2': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8 15Q12 17.5 16 15" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
-  '3': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8.5 14.5H15.5" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round"/></>,
-  '4': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M8 14.5Q12 12 16 14.5" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
-  '5': <><circle cx="9" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><circle cx="15" cy="10" r="1.3" fill="rgba(0,0,0,0.38)"/><path d="M7 14Q12 9 17 14" stroke="rgba(0,0,0,0.38)" strokeWidth="1.7" strokeLinecap="round" fill="none"/></>,
+  // red – very sad: angry brows + deep frown
+  '1': <><path d="M7 8L10.5 10" stroke={F} strokeWidth="1.7" strokeLinecap="round"/><path d="M17 8L13.5 10" stroke={F} strokeWidth="1.7" strokeLinecap="round"/><circle cx="9.5" cy="11.5" r="1.4" fill={F}/><circle cx="14.5" cy="11.5" r="1.4" fill={F}/><path d="M6.5 18Q12 23.5 17.5 18" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
+  // orange – sad: plain eyes + moderate frown
+  '2': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M7.5 17Q12 21 16.5 17" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
+  // white – neutral: plain eyes + flat mouth
+  '3': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M8.5 15.5H15.5" stroke={F} strokeWidth="1.9" strokeLinecap="round"/></>,
+  // blue – happy: plain eyes + moderate smile
+  '4': <><circle cx="9.5" cy="10.5" r="1.4" fill={F}/><circle cx="14.5" cy="10.5" r="1.4" fill={F}/><path d="M7.5 15Q12 10.5 16.5 15" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
+  // green – very happy: squinting arcs + big wide smile
+  '5': <><path d="M7 10.5Q9.5 7.5 12 10.5" stroke={F} strokeWidth="1.7" strokeLinecap="round" fill="none"/><path d="M12 10.5Q14.5 7.5 17 10.5" stroke={F} strokeWidth="1.7" strokeLinecap="round" fill="none"/><path d="M5.5 15Q12 8 18.5 15" stroke={F} strokeWidth="1.9" strokeLinecap="round" fill="none"/></>,
 };
 
 export function DayDetailSheet({ theme, dKey, trackers, values, onClose, onSave }) {
@@ -128,7 +134,7 @@ function TrackerInput({ theme, tracker, value, onChange }) {
               outline: selected ? `2px solid ${MOOD_COLORS[ns]}` : 'none',
               outlineOffset: 2,
             }}>
-              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: '10%', pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
+              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
             </button>
           );
         })}
@@ -180,7 +186,7 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
               outline: value === ns ? `2px solid ${MOOD_COLORS[ns]}` : 'none',
               outlineOffset: 2,
             }}>
-              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: '10%', pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
+              <svg viewBox="0 0 24 24" fill="none" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>{MOOD_FACE[ns]}</svg>
             </button>
           ))}
         </div>
