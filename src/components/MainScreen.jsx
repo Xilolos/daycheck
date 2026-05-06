@@ -178,8 +178,9 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
               const isToday = day.y === TODAY.y && day.m === TODAY.m && day.d === TODAY.d;
               const isFuture = new Date(day.y, day.m, day.d) > new Date(TODAY.y, TODAY.m, TODAY.d);
               const rowBg = isWeekend ? theme.stripe : theme.bg;
+              const dKey = dateKey(day.y, day.m, day.d);
               return (
-                <div key={`${day.y}-${day.m}-${day.d}`} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', paddingLeft: 14, borderBottom: `1px solid ${theme.rule}`, background: rowBg, fontVariantNumeric: 'tabular-nums', fontSize: 11 }}>
+                <div key={`${day.y}-${day.m}-${day.d}`} onClick={() => onCellTap(null, dKey)} style={{ flex: 1, minHeight: 0, display: 'grid', gridTemplateColumns: '1fr 1fr', alignItems: 'center', paddingLeft: 14, borderBottom: `1px solid ${theme.rule}`, background: rowBg, fontVariantNumeric: 'tabular-nums', fontSize: 11, cursor: 'pointer', userSelect: 'none' }}>
                   {isToday ? (
                     <span style={{ justifySelf: 'center', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 20, height: 18, borderRadius: 4, background: theme.accent, color: '#fff', fontSize: 11, fontWeight: 600 }}>{pad2(day.d)}</span>
                   ) : (
