@@ -4,6 +4,7 @@ import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 import { MOOD_COLORS } from '../constants';
+import { Icon } from '../icons';
 
 const F = 'rgba(0,0,0,0.48)';
 const EYE = <><circle cx="9" cy="10" r="1.4" fill={F}/><circle cx="15" cy="10" r="1.4" fill={F}/></>;
@@ -39,14 +40,16 @@ function DayDetailContent({ theme, draft, setField, y, m, d, wd, trackers, onClo
   return (
     <div style={{ padding: '8px 22px 18px' }}>
       <div style={{ fontSize: 10, color: theme.dim, letterSpacing: '0.2em', marginBottom: 4 }}>
-        {t.dayNames[wd]}
+        {t.dayNamesFull[wd]}
       </div>
       <div style={{ fontFamily: `'Fraunces', serif`, fontSize: 26, fontWeight: 500, marginBottom: 14 }}>
         {t.months[m - 1]} {pad2(d)}
       </div>
       {trackers.map(tr => (
         <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: `1px solid ${theme.rule}` }}>
-          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.name}</div>
+          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim, display: 'flex', alignItems: 'center' }}>
+            {tr.icon ? <Icon id={tr.icon} size={16} /> : tr.name}
+          </div>
           <div><TrackerInput theme={theme} tracker={tr} value={draft[tr.id]} onChange={(v) => setField(tr.id, v)} /></div>
         </div>
       ))}
