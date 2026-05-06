@@ -51,6 +51,7 @@ export const TRANSLATIONS = {
     termsNote: 'By continuing, you agree to the terms.',
     checkEmailNote: 'Check your email to confirm your account.',
     signInBtn: 'SIGN IN', createAccountBtn: 'CREATE ACCOUNT',
+    themeReloadNote: 'The app will reload when you change the theme.',
     timeFormat: 'TIME FORMAT', time12h: '12H', time24h: '24H',
     amoled: 'AMOLED',
     typeMeta: {
@@ -110,6 +111,7 @@ export const TRANSLATIONS = {
     termsNote: 'Συνεχίζοντας, αποδέχεστε τους όρους.',
     checkEmailNote: 'Ελέγξτε το email σας για επιβεβαίωση.',
     signInBtn: 'ΣΥΝΔΕΣΗ', createAccountBtn: 'ΔΗΜΙΟΥΡΓΙΑ',
+    themeReloadNote: 'Η εφαρμογή θα επαναφορτωθεί όταν αλλάξετε θέμα.',
     timeFormat: 'ΜΟΡΦΗ ΩΡΑΣ', time12h: '12Ω', time24h: '24Ω',
     amoled: 'AMOLED',
     typeMeta: {

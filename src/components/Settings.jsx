@@ -63,6 +63,7 @@ export function Settings({ theme, trackers, themeMode, accent, todayColor, amole
               fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.16em',
             }}>{t.amoled}</button>
           )}
+          <div style={{ fontSize: 9, color: theme.faint, letterSpacing: '0.06em', marginTop: 6, textAlign: 'center' }}>{t.themeReloadNote}</div>
         </div>
 
         <div>
