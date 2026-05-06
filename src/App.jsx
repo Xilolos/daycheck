@@ -29,11 +29,11 @@ export default function App() {
   const [amoled, setAmoledState]         = useState(() => loadPref('dc_amoled', false));
   const [trackerIcons, setTrackerIconsState] = useState(() => loadPref('dc_tracker_icons', {}));
 
-  const setThemeMode  = (v) => { setThemeModeState(v);    savePref('dc_themeMode', v);   };
+  const setThemeMode  = (v) => { savePref('dc_themeMode', v);  window.location.reload(); };
   const setAccent     = (v) => { setAccentState(v);       savePref('dc_accent', v);      };
   const setTodayColor = (v) => { setTodayColorState(v);  savePref('dc_todayColor', v);  };
   const setLang       = (v) => { setLangState(v);         savePref('dc_lang', v);        };
-  const setAmoled     = (v) => { setAmoledState(v);       savePref('dc_amoled', v);      };
+  const setAmoled     = (v) => { savePref('dc_amoled', v); window.location.reload();    };
   const setTrackerIcon = (id, icon) => {
     setTrackerIconsState(prev => {
       const next = icon ? { ...prev, [id]: icon } : Object.fromEntries(Object.entries(prev).filter(([k]) => k !== id));
@@ -154,6 +154,14 @@ export default function App() {
     meta.content = theme.bg;
     document.head.appendChild(meta);
   }, [theme.bg]);
+
+  useEffect(() => {
+    if (themeMode !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = () => window.location.reload();
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, [themeMode]);
 
   const fontStack = `'JetBrains Mono', 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace`;
 
