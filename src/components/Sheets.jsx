@@ -113,7 +113,7 @@ function StatsContent({ theme, stats, globalStreak, onClose }) {
   );
 }
 
-function TrackerInput({ theme, tracker, value, onChange }) {
+function TrackerInput({ theme, tracker, value, onChange, autoFocus }) {
   const t = useT();
   const v = value ?? '';
   if (tracker.type === 'check') {
@@ -167,13 +167,13 @@ function TrackerInput({ theme, tracker, value, onChange }) {
     };
     return (
       <input value={v} onChange={handleTimeChange} onBlur={handleTimeBlur}
-        placeholder="07:30" inputMode="numeric" style={inputStyle(theme)} />
+        placeholder="07:30" inputMode="numeric" autoFocus={autoFocus} style={inputStyle(theme)} />
     );
   }
   const placeholder = t.typeMeta[tracker.type]?.placeholder || '';
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-      <input value={v} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} style={inputStyle(theme)} />
+      <input value={v} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} autoFocus={autoFocus} style={inputStyle(theme)} />
       {tracker.unit && <span style={{ fontSize: 11, color: theme.dim }}>{tracker.unit}</span>}
     </div>
   );
@@ -232,6 +232,33 @@ function QuickActionContent({ theme, target, tracker, value, onClose, onClear, o
       )}
       <button onClick={() => animateThen(onEdit)} style={{ ...btnSecondary(theme), width: '100%', marginBottom: 6 }}>{t.editFullDay}</button>
       <button onClick={() => animateThen(onClear)} style={{ ...btnSecondary(theme), width: '100%', color: theme.accent, borderColor: theme.accent }}>{t.clearValue}</button>
+    </div>
+  );
+}
+
+export function QuickInputSheet({ theme, target, tracker, value, onClose, onSave }) {
+  if (!tracker) return null;
+  return (
+    <SheetOverlay theme={theme} onClose={onClose} small>
+      <QuickInputContent theme={theme} target={target} tracker={tracker} value={value} onClose={onClose} onSave={onSave} />
+    </SheetOverlay>
+  );
+}
+
+function QuickInputContent({ theme, target, tracker, value, onClose, onSave }) {
+  const t = useT();
+  const [draft, setDraft] = useState(value ?? '');
+  const animateThen = useSheetAnimate();
+  return (
+    <div style={{ padding: '8px 22px 22px' }}>
+      <div style={{ fontSize: 10, letterSpacing: '0.2em', color: theme.dim, marginBottom: 14 }}>
+        {tracker.name} · {target.dKey}
+      </div>
+      <TrackerInput theme={theme} tracker={tracker} value={draft} onChange={setDraft} autoFocus />
+      <div style={{ display: 'flex', gap: 8, marginTop: 14 }}>
+        <button onClick={() => animateThen(onClose)} style={btnSecondary(theme)}>{t.cancel}</button>
+        <button onClick={() => animateThen(() => onSave(draft))} style={btnPrimary(theme)}>{t.save}</button>
+      </div>
     </div>
   );
 }

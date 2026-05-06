@@ -6,7 +6,7 @@ import { supabase } from './supabase';
 import Onboarding from './components/Onboarding';
 import MainScreen from './components/MainScreen';
 import { Settings, TrackerEditor } from './components/Settings';
-import { DayDetailSheet, QuickActionMenu, StatsSheet } from './components/Sheets';
+import { DayDetailSheet, QuickActionMenu, StatsSheet, QuickInputSheet } from './components/Sheets';
 
 function loadPref(key, fallback) {
   try { const v = localStorage.getItem(key); return v != null ? JSON.parse(v) : fallback; }
@@ -14,6 +14,18 @@ function loadPref(key, fallback) {
 }
 function savePref(key, value) {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+}
+function getQueue() {
+  try { return JSON.parse(localStorage.getItem('dc_offline_queue') || '[]'); } catch { return []; }
+}
+function saveQueue(q) {
+  try { localStorage.setItem('dc_offline_queue', JSON.stringify(q)); } catch {}
+}
+function getMondayOf(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  d.setDate(d.getDate() + (day === 0 ? -6 : 1 - day));
+  return d;
 }
 
 export default function App() {
@@ -52,6 +64,12 @@ export default function App() {
   const [editingDay, setEditingDay]             = useState(null);
   const [longPressTarget, setLongPressTarget]   = useState(null);
   const [statsOpen, setStatsOpen]               = useState(false);
+  const [isOnline, setIsOnline]                 = useState(() => navigator.onLine);
+  const [view, setView]                         = useState('month');
+  const [weekStart, setWeekStart]               = useState(() => getMondayOf(new Date()));
+  const [quickEditTarget, setQuickEditTarget]   = useState(null);
+  const userRef = useRef(null);
+  userRef.current = user;
 
   // ── Auth ────────────────────────────────────────────────────────
   const loadData = useCallback(async (u) => {
@@ -107,6 +125,36 @@ export default function App() {
       loadedForUser.current = null;
     }
   }, [user, loadData]);
+
+  const drainQueue = useCallback(async () => {
+    const u = userRef.current;
+    if (!u) return;
+    const queue = getQueue();
+    if (!queue.length) return;
+    const remaining = [];
+    for (const item of queue) {
+      try {
+        if (item.op === 'delete') {
+          await supabase.from('entries').delete()
+            .eq('user_id', u.id).eq('date_key', item.dKey).eq('tracker_id', item.trackerId);
+        } else {
+          await supabase.from('entries').upsert(
+            { user_id: u.id, date_key: item.dKey, tracker_id: item.trackerId, value: item.value, updated_at: new Date().toISOString() },
+            { onConflict: 'date_key,tracker_id,user_id' },
+          );
+        }
+      } catch { remaining.push(item); }
+    }
+    saveQueue(remaining);
+  }, []);
+
+  useEffect(() => {
+    const onOnline  = () => { setIsOnline(true);  drainQueue(); };
+    const onOffline = () => setIsOnline(false);
+    window.addEventListener('online',  onOnline);
+    window.addEventListener('offline', onOffline);
+    return () => { window.removeEventListener('online', onOnline); window.removeEventListener('offline', onOffline); };
+  }, [drainQueue]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -169,6 +217,12 @@ export default function App() {
   const setValue = useCallback(async (dKey, trackerId, value) => {
     setData(prev => ({ ...prev, [dKey]: { ...(prev[dKey] || {}), [trackerId]: value } }));
     if (!user) return;
+    if (!navigator.onLine) {
+      const op = value === '' || value == null ? 'delete' : 'upsert';
+      const queue = getQueue().filter(item => !(item.dKey === dKey && item.trackerId === trackerId));
+      saveQueue([...queue, { op, dKey, trackerId, value }]);
+      return;
+    }
     if (value === '' || value == null) {
       await supabase.from('entries').delete()
         .eq('user_id', user.id).eq('date_key', dKey).eq('tracker_id', trackerId);
@@ -243,10 +297,34 @@ export default function App() {
     });
   }, []);
 
+  const prevPeriod = useCallback(() => {
+    if (view === 'week') {
+      setWeekStart(prev => { const d = new Date(prev); d.setDate(d.getDate() - 7); return d; });
+    } else { stepMonth(-1); }
+  }, [view, stepMonth]);
+
+  const nextPeriod = useCallback(() => {
+    if (view === 'week') {
+      setWeekStart(prev => { const d = new Date(prev); d.setDate(d.getDate() + 7); return d; });
+    } else { stepMonth(1); }
+  }, [view, stepMonth]);
+
+  const toggleView = useCallback(() => {
+    setView(v => v === 'month' ? 'week' : 'month');
+    setWeekStart(getMondayOf(new Date(TODAY.y, TODAY.m, TODAY.d)));
+  }, []);
+
   const goToday = useCallback(() => {
     setYear(TODAY.y); setMonth(TODAY.m);
+    setWeekStart(getMondayOf(new Date(TODAY.y, TODAY.m, TODAY.d)));
     setEditingDay(dateKey(TODAY.y, TODAY.m, TODAY.d));
   }, []);
+
+  const weekDays = useMemo(() => Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(weekStart);
+    d.setDate(d.getDate() + i);
+    return { y: d.getFullYear(), m: d.getMonth(), d: d.getDate() };
+  }), [weekStart]);
 
   const lpTimer = useRef(null);
   const startLongPress = useCallback((trackerId, dKey) => {
@@ -258,11 +336,13 @@ export default function App() {
 
   // ── Derived state ─────────────────────────────────────────────────
   const totals = useMemo(() => {
+    const activeKeys = view === 'week'
+      ? weekDays.map(d => dateKey(d.y, d.m, d.d))
+      : Object.keys(data).filter(k => k.startsWith(`${year}-${pad2(month + 1)}`));
     const out = {};
     for (const tr of trackers) {
       const vals = [];
-      for (const k of Object.keys(data)) {
-        if (!k.startsWith(`${year}-${pad2(month + 1)}`)) continue;
+      for (const k of activeKeys) {
         const v = data[k]?.[tr.id];
         if (v !== undefined && v !== '') vals.push(v);
       }
@@ -283,7 +363,7 @@ export default function App() {
       } else out[tr.id] = '·';
     }
     return out;
-  }, [trackers, data, year, month, timeFormat, lang]);
+  }, [trackers, data, year, month, timeFormat, lang, view, weekDays]);
 
   const streaks = useMemo(() => {
     const out = {};
@@ -302,6 +382,17 @@ export default function App() {
     () => trackers.map(tr => ({ ...tr, icon: trackerIcons[tr.id] || null })),
     [trackers, trackerIcons]
   );
+
+  const handleDoubleTap = useCallback((trackerId, dKey) => {
+    const tr = trackersWithIcons.find(t => t.id === trackerId);
+    if (!tr) return;
+    if (tr.type === 'check') {
+      const cur = data[dKey]?.[trackerId];
+      setValue(dKey, trackerId, cur === '×' ? '' : '×');
+    } else {
+      setQuickEditTarget({ trackerId, dKey });
+    }
+  }, [trackersWithIcons, data, setValue]);
 
   // ── Render ────────────────────────────────────────────────────────
   const appBg = theme.bg;
@@ -348,14 +439,17 @@ export default function App() {
             year={year} month={month}
             trackers={trackersWithIcons} data={data}
             totals={totals} streaks={streaks} todayColor={todayColor}
-            onPrev={() => stepMonth(-1)} onNext={() => stepMonth(1)} onToday={goToday}
+            onPrev={prevPeriod} onNext={nextPeriod} onToday={goToday}
             onAddTracker={() => setEditingTrackerId('new')}
             onOpenSettings={() => setScreen('settings')}
             onCellTap={handleCellTap}
+            onDoubleTap={handleDoubleTap}
             startLongPress={startLongPress} cancelLongPress={cancelLongPress}
             onColumnLongPress={(id) => setEditingTrackerId(id)}
             onReorderTrackers={reorderTrackers}
             onOpenStats={() => setStatsOpen(true)}
+            view={view} weekDays={weekDays} onToggleView={toggleView}
+            isOnline={isOnline}
           />
         {screen === 'settings' && (
           <Settings
@@ -404,6 +498,16 @@ export default function App() {
         )}
         {statsOpen && (
           <StatsSheet theme={theme} trackers={trackersWithIcons} data={data} onClose={() => setStatsOpen(false)} />
+        )}
+        {quickEditTarget && (
+          <QuickInputSheet
+            theme={theme}
+            target={quickEditTarget}
+            tracker={trackersWithIcons.find(x => x.id === quickEditTarget.trackerId)}
+            value={data[quickEditTarget.dKey]?.[quickEditTarget.trackerId]}
+            onClose={() => setQuickEditTarget(null)}
+            onSave={(v) => { setValue(quickEditTarget.dKey, quickEditTarget.trackerId, v); setQuickEditTarget(null); }}
+          />
         )}
       </div>
     </div>
