@@ -3,6 +3,7 @@ import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
 import { useT } from '../i18n';
 import { Icon, ICON_KEYS } from '../icons';
+import { MOOD_COLORS } from '../constants';
 
 export function Settings({ theme, trackers, themeMode, accent, todayColor, amoled, lang, onThemeMode, onAccent, onTodayColor, onAmoled, onLang, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();
@@ -200,8 +201,11 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
           >
             <div onClick={() => onEditTracker(tr.id)} style={{ flex: 1, padding: '12px 14px', cursor: 'pointer' }}>
               <div style={{ fontSize: 13, letterSpacing: '0.06em' }}>{tr.name}</div>
-              <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em' }}>
-                {t.typeMeta[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}
+              <div style={{ fontSize: 10, color: theme.dim, marginTop: 2, letterSpacing: '0.04em', display: 'flex', alignItems: 'center', gap: 4 }}>
+                {tr.type === 'mood'
+                  ? ['1','2','3','4','5'].map(n => <div key={n} style={{ width: 8, height: 8, borderRadius: '50%', background: MOOD_COLORS[n], boxShadow: '0 0 0 1px rgba(0,0,0,0.12)' }} />)
+                  : <>{t.typeMeta[tr.type]?.label || tr.type}{tr.unit ? ` · ${tr.unit}` : ''}</>
+                }
               </div>
             </div>
             <div
@@ -300,7 +304,14 @@ function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit
               fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', textAlign: 'left',
             }}>
               <div style={{ fontWeight: 600, marginBottom: 2 }}>{t.typeMeta[typ].label}</div>
-              <div style={{ fontSize: 9, opacity: 0.6 }}>{t.typeMeta[typ].placeholder}</div>
+              {typ === 'mood'
+                ? <div style={{ display: 'flex', gap: 3, marginTop: 4 }}>
+                    {['1','2','3','4','5'].map(n => (
+                      <div key={n} style={{ width: 10, height: 10, borderRadius: '50%', background: MOOD_COLORS[n], boxShadow: '0 0 0 1px rgba(0,0,0,0.15)', flexShrink: 0 }} />
+                    ))}
+                  </div>
+                : <div style={{ fontSize: 9, opacity: 0.6 }}>{t.typeMeta[typ].placeholder}</div>
+              }
             </button>
           ))}
         </div>
