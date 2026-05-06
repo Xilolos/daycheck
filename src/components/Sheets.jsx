@@ -131,7 +131,7 @@ function TrackerInput({ theme, tracker, value, onChange }) {
           const ns = String(n);
           const selected = ns === v;
           return (
-            <button key={n} onClick={() => onChange(ns)} style={{
+            <button key={n} onClick={() => onChange(selected ? '' : ns)} style={{
               width: 40, height: 40, borderRadius: '50%', cursor: 'pointer', padding: 0, flexShrink: 0,
               background: MOOD_COLORS[ns], position: 'relative', overflow: 'hidden',
               border: `3px solid ${selected ? theme.text : 'transparent'}`,
