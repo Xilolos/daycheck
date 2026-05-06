@@ -36,7 +36,10 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
   // Drag-to-reorder column headers
   const headerGridRef = useRef(null);
-  const dragState = useRef({ active: false, wasDrag: false, srcIdx: null, dropIdx: null });
+  const dragState = useRef({ active: false, srcIdx: null, dropIdx: null });
+  const longPressTimer = useRef(null);
+  const touchStartPos = useRef({ x: 0, y: 0 });
+  const lastWasDrag = useRef(false);
   const latestTrackers = useRef(trackers);
   latestTrackers.current = trackers;
   const [dndVisual, setDndVisual] = useState({ dragIdx: null, dropIdx: null });
@@ -50,22 +53,31 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
       const colW = rect.width / latestTrackers.current.length;
       return Math.max(0, Math.min(latestTrackers.current.length - 1, Math.floor(x / colW)));
     };
+    const cancelTimer = () => {
+      if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+    };
     const onMove = (e) => {
-      if (!dragState.current.active) return;
-      const idx = getColIdx(e.touches[0].clientX);
-      if (!dragState.current.wasDrag && idx !== dragState.current.srcIdx) {
-        dragState.current.wasDrag = true;
+      if (longPressTimer.current) {
+        const dx = e.touches[0].clientX - touchStartPos.current.x;
+        const dy = e.touches[0].clientY - touchStartPos.current.y;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) cancelTimer();
+        return;
       }
-      if (dragState.current.wasDrag) e.preventDefault();
+      if (!dragState.current.active) return;
+      e.preventDefault();
+      const idx = getColIdx(e.touches[0].clientX);
       dragState.current.dropIdx = idx;
       setDndVisual({ dragIdx: dragState.current.srcIdx, dropIdx: idx });
     };
     const onEnd = () => {
+      cancelTimer();
       if (!dragState.current.active) return;
-      const { srcIdx, dropIdx, wasDrag } = dragState.current;
-      dragState.current = { active: false, wasDrag: false, srcIdx: null, dropIdx: null };
+      const { srcIdx, dropIdx } = dragState.current;
+      const moved = srcIdx != null && dropIdx != null && srcIdx !== dropIdx;
+      lastWasDrag.current = moved;
+      dragState.current = { active: false, srcIdx: null, dropIdx: null };
       setDndVisual({ dragIdx: null, dropIdx: null });
-      if (wasDrag && srcIdx != null && dropIdx != null && srcIdx !== dropIdx) {
+      if (moved) {
         const next = [...latestTrackers.current];
         const [item] = next.splice(srcIdx, 1);
         next.splice(dropIdx, 0, item);
@@ -157,10 +169,17 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
                 return (
                   <div key={tr.id}
                     onContextMenu={(e) => { e.preventDefault(); onColumnLongPress(tr.id); }}
-                    onTouchStart={() => {
-                      dragState.current = { active: true, wasDrag: false, srcIdx: colIdx, dropIdx: colIdx };
+                    onTouchStart={(e) => {
+                      touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+                      dragState.current = { active: false, srcIdx: colIdx, dropIdx: colIdx };
+                      if (longPressTimer.current) clearTimeout(longPressTimer.current);
+                      longPressTimer.current = setTimeout(() => {
+                        longPressTimer.current = null;
+                        dragState.current.active = true;
+                        setDndVisual({ dragIdx: colIdx, dropIdx: colIdx });
+                      }, 250);
                     }}
-                    onClick={() => { if (!dragState.current.wasDrag) onColumnLongPress(tr.id); }}
+                    onClick={() => { if (!lastWasDrag.current) onColumnLongPress(tr.id); lastWasDrag.current = false; }}
                     style={{
                       textAlign: 'center', padding: '0 4px', cursor: 'grab', overflow: 'hidden',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',

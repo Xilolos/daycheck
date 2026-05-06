@@ -121,6 +121,8 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
   const [overIdx, setOverIdx] = useState(null);
   const listRef = useRef(null);
   const state = useRef({ active: false, from: null });
+  const longPressTimer = useRef(null);
+  const touchStartPos = useRef({ x: 0, y: 0 });
   const latestOver = useRef(null);
   const latestTrackers = useRef(trackers);
   latestTrackers.current = trackers;
@@ -146,13 +148,23 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
   useEffect(() => {
     const el = listRef.current;
     if (!el) return;
+    const cancelTimer = () => {
+      if (longPressTimer.current) { clearTimeout(longPressTimer.current); longPressTimer.current = null; }
+    };
     const onMove = (e) => {
+      if (longPressTimer.current) {
+        const dx = e.touches[0].clientX - touchStartPos.current.x;
+        const dy = e.touches[0].clientY - touchStartPos.current.y;
+        if (Math.abs(dx) > 6 || Math.abs(dy) > 6) cancelTimer();
+        return;
+      }
       if (!state.current.active) return;
       e.preventDefault();
       const idx = getRowIdx(e.touches[0].clientY);
       if (idx !== null) { latestOver.current = idx; setOverIdx(idx); }
     };
     const onEnd = () => {
+      cancelTimer();
       if (!state.current.active) return;
       commit(state.current.from, latestOver.current);
       state.current = { active: false, from: null };
@@ -167,10 +179,15 @@ function TrackerList({ theme, trackers, onEditTracker, onAddTracker, onReorderTr
 
   const onHandleTouchStart = (e, i) => {
     e.stopPropagation();
-    state.current = { active: true, from: i };
-    latestOver.current = i;
-    setDragIdx(i);
-    setOverIdx(i);
+    touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    if (longPressTimer.current) clearTimeout(longPressTimer.current);
+    longPressTimer.current = setTimeout(() => {
+      longPressTimer.current = null;
+      state.current = { active: true, from: i };
+      latestOver.current = i;
+      setDragIdx(i);
+      setOverIdx(i);
+    }, 250);
   };
 
   const onDragStart = (e, i) => { e.dataTransfer.effectAllowed = 'move'; setDragIdx(i); };
