@@ -96,7 +96,9 @@ function StatsContent({ theme, stats, globalStreak, onClose }) {
         </div>
         {stats.map(({ tr, filled, longest, current, pct }, i) => (
           <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 46px 56px 52px 46px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
-            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
+            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+              {tr.icon ? <Icon id={tr.icon} size={14} /> : <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</span>}
+            </div>
             <div style={{ textAlign: 'center' }}>{filled}</div>
             <div style={{ textAlign: 'center' }}>{longest > 0 ? `${longest}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'center', color: current > 0 ? theme.text : theme.faint }}>{current > 0 ? `${current}${t.daySuffix}` : '·'}</div>
