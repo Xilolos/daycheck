@@ -39,10 +39,10 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
       {/* Header */}
       <div style={{ padding: '14px 18px 14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
-        <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 30, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1 }}>
+        <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 24, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1, minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
           {monthName}{' '}<span style={{ color: theme.dim, fontWeight: 300 }}>{year}</span>
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
           <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: streakExtendedToday ? theme.accent : 'transparent', border: `1px solid ${streakExtendedToday ? theme.accent : theme.rule}`, color: streakExtendedToday ? '#fff' : theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <rect x="1" y="6" width="2" height="3" fill="currentColor"/>

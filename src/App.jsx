@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { DEFAULT_TRACKERS } from './constants';
-import { LangContext } from './i18n';
+import { LangContext, TRANSLATIONS } from './i18n';
 import { pad2, dateKey, parseTimeToMin, minToTime, TODAY } from './utils';
 import { supabase } from './supabase';
 import Onboarding from './components/Onboarding';
@@ -254,7 +254,7 @@ export default function App() {
         const v = data[k]?.[tr.id];
         if (v !== undefined && v !== '') vals.push(v);
       }
-      if (tr.type === 'check')        out[tr.id] = `${vals.length}d`;
+      if (tr.type === 'check')        out[tr.id] = `${vals.length}${(TRANSLATIONS[lang] || TRANSLATIONS.en).daySuffix}`;
       else if (tr.type === 'counter') out[tr.id] = String(vals.reduce((a, b) => a + (parseFloat(b) || 0), 0));
       else if (tr.type === 'distance' || tr.type === 'duration') {
         const sum = vals.reduce((a, b) => a + (parseFloat(b) || 0), 0);
@@ -271,7 +271,7 @@ export default function App() {
       } else out[tr.id] = '·';
     }
     return out;
-  }, [trackers, data, year, month, timeFormat]);
+  }, [trackers, data, year, month, timeFormat, lang]);
 
   const streaks = useMemo(() => {
     const out = {};

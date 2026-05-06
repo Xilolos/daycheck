@@ -3,7 +3,7 @@ import { createContext, useContext } from 'react';
 export const LangContext = createContext('en');
 export const useT = () => TRANSLATIONS[useContext(LangContext)] || TRANSLATIONS.en;
 
-const TRANSLATIONS = {
+export const TRANSLATIONS = {
   en: {
     months: ['January','February','March','April','May','June','July','August','September','October','November','December'],
     dayLetters: ['S','M','T','W','T','F','S'],
@@ -63,7 +63,7 @@ const TRANSLATIONS = {
     },
   },
   el: {
-    months: ['Ιαν','Φεβ','Μαρ','Απρ','Μαι','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'],
+    months: ['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'],
     dayLetters: ['Κυ','Δε','Τρ','Τε','Πε','Πα','Σα'],
     dayNames: ['ΚΥΡ','ΔΕΥ','ΤΡΙ','ΤΕΤ','ΠΕΜ','ΠΑΡ','ΣΑΒ'],
     daySuffix: 'ημ',
