@@ -312,7 +312,7 @@ function TrackerEditorContent({ theme, isNew, name, setName, type, setType, unit
       )}
       <div style={{ marginTop: 18, display: 'flex', gap: 8 }}>
         <button onClick={() => animateThen(onClose)} style={{ ...btnSecondary(theme), flex: 1 }}>{t.cancel}</button>
-        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out, iconDraft)); }} style={{ ...btnPrimary(theme), flex: 1 }}>{t.save}</button>
+        <button onClick={() => { const out = save(); if (out) animateThen(() => onSave(out, iconDraft)); }} disabled={!name.trim()} style={{ ...btnPrimary(theme), flex: 1, opacity: name.trim() ? 1 : 0.35, cursor: name.trim() ? 'pointer' : 'default' }}>{t.save}</button>
         {!isNew && (
           <button onClick={() => animateThen(() => onDelete(tracker.id))} style={{ ...btnSecondary(theme), flex: 1, color: theme.accent, borderColor: theme.accent }}>{t.delete}</button>
         )}

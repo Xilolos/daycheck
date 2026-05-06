@@ -78,7 +78,7 @@ export default function SheetOverlay({ theme, children, onClose, small }) {
             ref={handleRef}
             onTouchStart={onHandleTouchStart}
             onTouchEnd={onHandleTouchEnd}
-            style={{ display: 'flex', justifyContent: 'center', padding: '14px 0 6px', touchAction: 'none', cursor: 'grab' }}
+            style={{ display: 'flex', justifyContent: 'center', padding: '18px 0 18px', touchAction: 'none', cursor: 'grab' }}
           >
             <div style={{ width: 36, height: 4, borderRadius: 2, background: theme.faint }} />
           </div>

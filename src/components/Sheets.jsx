@@ -46,7 +46,7 @@ function DayDetailContent({ theme, draft, setField, y, m, d, wd, trackers, onClo
       </div>
       {trackers.map(tr => (
         <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '70px 1fr', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: `1px solid ${theme.rule}` }}>
-          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.icon ? tr.icon : tr.name}</div>
+          <div style={{ fontSize: 10, letterSpacing: '0.16em', color: theme.dim }}>{tr.name}</div>
           <div><TrackerInput theme={theme} tracker={tr} value={draft[tr.id]} onChange={(v) => setField(tr.id, v)} /></div>
         </div>
       ))}
@@ -84,7 +84,7 @@ function StatsContent({ theme, stats, bestCurrent, onClose }) {
         </div>
         {stats.map(({ tr, filled, longest, pct }, i) => (
           <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 48px 48px 48px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
-            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.icon ? `${tr.icon} ${tr.name}` : tr.name}</div>
+            <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
             <div style={{ textAlign: 'right' }}>{tr.type === 'check' ? `${longest}${t.daySuffix}` : '·'}</div>
             <div style={{ textAlign: 'right' }}>{pct}%</div>
