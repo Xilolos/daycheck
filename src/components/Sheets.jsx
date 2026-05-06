@@ -84,7 +84,7 @@ function StatsContent({ theme, stats, globalStreak, onClose }) {
       </div>
       <div style={{ fontSize: 9, letterSpacing: '0.12em', color: theme.dim, marginBottom: 8 }}>{t.byTracker}</div>
       <div style={{ border: `1px solid ${theme.rule}`, borderRadius: 8, overflow: 'hidden' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 36px 44px 44px 40px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 46px 56px 52px 46px', fontSize: 9, letterSpacing: '0.1em', color: theme.dim, padding: '8px 12px', borderBottom: `1px solid ${theme.rule}` }}>
           <div></div>
           <div style={{ textAlign: 'right' }}>{t.colLog}</div>
           <div style={{ textAlign: 'right' }}>{t.colBest}</div>
@@ -92,7 +92,7 @@ function StatsContent({ theme, stats, globalStreak, onClose }) {
           <div style={{ textAlign: 'right' }}>{t.colPct}</div>
         </div>
         {stats.map(({ tr, filled, longest, current, pct }, i) => (
-          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 36px 44px 44px 40px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
+          <div key={tr.id} style={{ display: 'grid', gridTemplateColumns: '1fr 46px 56px 52px 46px', fontSize: 12, padding: '10px 12px', borderBottom: i < stats.length - 1 ? `1px solid ${theme.rule}` : 'none', fontVariantNumeric: 'tabular-nums', alignItems: 'center' }}>
             <div style={{ letterSpacing: '0.06em', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tr.name}</div>
             <div style={{ textAlign: 'right' }}>{filled}</div>
             <div style={{ textAlign: 'right' }}>{longest > 0 ? `${longest}${t.daySuffix}` : '·'}</div>

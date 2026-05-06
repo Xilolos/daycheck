@@ -91,7 +91,7 @@ export const TRANSLATIONS = {
     statsTitle: 'ΣΤΑΤΙΣΤΙΚΑ · ΦΕΤΟΣ',
     longestStreak: 'ΜΕΓΑΛΥΤΕΡΟ ΣΕΡΙ',
     byTracker: 'ΑΝΑ ΙΧΝΗΛΑΤΗ',
-    colLog: 'ΗΜ.', colBest: 'MAX', colCur: 'ΤΡ.', colPct: '%ΕΤ.',
+    colLog: 'ΗΜΕΡΕΣ', colBest: 'ΜΕΓΙΣΤΟ', colCur: 'ΤΡΕΧΟΝ', colPct: '%ΕΤΟΥΣ',
     shortMonths: ['Ιαν','Φεβ','Μαρ','Απρ','Μαΐ','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'],
     close: 'ΚΛΕΙΣΙΜΟ',
     tagline: 'ΗΜΕΡΟΛΟΓΙΟ',
