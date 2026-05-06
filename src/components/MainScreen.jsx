@@ -103,7 +103,7 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
           {monthName}{' '}<span style={{ color: theme.dim, fontWeight: 300 }}>{year}</span>
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
-          <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: streakExtendedToday ? theme.accent : 'transparent', border: `1px solid ${streakExtendedToday ? theme.accent : theme.rule}`, color: streakExtendedToday ? '#fff' : theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
+          <button onClick={onOpenStats} aria-label="Stats" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px', borderRadius: 999, background: streakExtendedToday ? theme.accent : 'transparent', border: `1px solid ${streakExtendedToday ? theme.accent : theme.faint}`, color: streakExtendedToday ? '#fff' : theme.text, fontFamily: 'inherit', fontSize: 11, letterSpacing: '0.04em', cursor: 'pointer', fontVariantNumeric: 'tabular-nums', fontWeight: 600 }}>
             <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
               <rect x="1" y="6" width="2" height="3" fill="currentColor"/>
               <rect x="4" y="3" width="2" height="6" fill="currentColor"/>
@@ -266,12 +266,12 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
 
 function ToolbarBtn({ theme, onClick, children, aria }) {
   return (
-    <button onClick={onClick} aria-label={aria} style={{ width: 36, height: 36, border: `1px solid ${theme.rule}`, background: theme.bg, color: theme.text, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>{children}</button>
+    <button onClick={onClick} aria-label={aria} style={{ width: 36, height: 36, border: `1px solid ${theme.faint}`, background: theme.bg, color: theme.text, borderRadius: 8, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>{children}</button>
   );
 }
 
 function HeaderIconBtn({ theme, onClick, children, aria }) {
   return (
-    <button onClick={onClick} aria-label={aria} style={{ width: 30, height: 30, border: `1px solid ${theme.rule}`, background: 'transparent', color: theme.text, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>{children}</button>
+    <button onClick={onClick} aria-label={aria} style={{ width: 30, height: 30, border: `1px solid ${theme.faint}`, background: 'transparent', color: theme.text, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', padding: 0 }}>{children}</button>
   );
 }
