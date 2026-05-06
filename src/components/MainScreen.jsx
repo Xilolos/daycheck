@@ -98,8 +98,8 @@ export default function MainScreen({ theme, fontStack, year, month, trackers, da
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', background: theme.bg, color: theme.text, fontFamily: fontStack, boxSizing: 'border-box' }}>
 
       {/* Header */}
-      <div style={{ padding: '14px 18px 14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0 }}>
-        <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 24, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1, minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div style={{ padding: '14px 18px 14px 22px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8, flexShrink: 0, position: 'relative', zIndex: 3 }}>
+        <h1 style={{ margin: 0, fontFamily: `'Fraunces', 'Times New Roman', serif`, fontSize: 24, fontWeight: 500, letterSpacing: '-0.01em', color: theme.text, lineHeight: 1, minWidth: 0, overflow: 'hidden', whiteSpace: 'nowrap', paddingBottom: 6, marginBottom: -6 }}>
           {monthName}{' '}<span style={{ color: theme.dim, fontWeight: 300 }}>{year}</span>
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
