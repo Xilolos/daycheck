@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../supabase';
 import { btnPrimary, btnSecondary, linkBtn } from '../styles';
-import { useT } from '../i18n';
+import { useT } from '@shared/i18n';
 
 export default function Onboarding({ theme, fontStack, fontMono }) {
   const [step, setStep] = useState('auth');

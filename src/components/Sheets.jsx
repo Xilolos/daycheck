@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { pad2, TODAY } from '../utils';
+import { pad2, TODAY } from '@shared/utils';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
-import { useT } from '../i18n';
-import { MOOD_COLORS } from '../constants';
+import { useT } from '@shared/i18n';
+import { MOOD_COLORS } from '@shared/constants';
 import { Icon } from '../icons';
 
 const F = 'rgba(0,0,0,0.48)';

@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { btnPrimary, btnSecondary, inputStyle } from '../styles';
 import SheetOverlay, { useSheetAnimate } from './SheetOverlay';
-import { useT } from '../i18n';
+import { useT } from '@shared/i18n';
 import { Icon, ICON_KEYS } from '../icons';
-import { MOOD_COLORS } from '../constants';
+import { MOOD_COLORS } from '@shared/constants';
 
 export function Settings({ theme, trackers, themeMode, accent, todayColor, amoled, lang, onThemeMode, onAccent, onTodayColor, onAmoled, onLang, onBack, onEditTracker, onAddTracker, onRemoveTracker, onReorderTrackers, onSignOut, userEmail }) {
   const t = useT();

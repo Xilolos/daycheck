@@ -1,7 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, useMemo, useCallback } from 'react';
-import { DEFAULT_TRACKERS } from './constants';
-import { LangContext, TRANSLATIONS } from './i18n';
-import { pad2, dateKey, parseTimeToMin, minToTime, TODAY } from './utils';
+import { DEFAULT_TRACKERS } from '@shared/constants';
+import { LangContext, TRANSLATIONS } from '@shared/i18n';
+import { pad2, dateKey, parseTimeToMin, minToTime, TODAY } from '@shared/utils';
 import { supabase } from './supabase';
 import Onboarding from './components/Onboarding';
 import MainScreen from './components/MainScreen';

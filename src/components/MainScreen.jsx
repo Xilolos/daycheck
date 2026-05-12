@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '../utils';
-import { useT } from '../i18n';
-import { MOOD_COLORS } from '../constants';
+import { pad2, daysInMonth, dateKey, displayValue, TODAY } from '@shared/utils';
+import { useT } from '@shared/i18n';
+import { MOOD_COLORS } from '@shared/constants';
 import { Icon } from '../icons';
 
 const DATE_COL_WIDTH = 56;
