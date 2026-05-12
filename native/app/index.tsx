@@ -1,14 +1,25 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { TODAY } from '@shared/utils';
+import { supabase } from '../lib/supabase';
+import { useT } from '@shared/i18n';
 
 export default function HomeScreen() {
+  const t = useT();
+
+  const signOut = async () => {
+    await supabase.auth.signOut();
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>DayCheck</Text>
-      <Text style={styles.subtitle}>
+      <Text style={styles.date}>
         {TODAY.y}-{String(TODAY.m + 1).padStart(2, '0')}-{String(TODAY.d).padStart(2, '0')}
       </Text>
-      <Text style={styles.note}>Native app — Phase 1 scaffold ✓</Text>
+      <Text style={styles.note}>Phase 2: auth ✓</Text>
+      <TouchableOpacity onPress={signOut} style={styles.signOutBtn}>
+        <Text style={styles.signOutLabel}>{t.signOut}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -20,23 +31,37 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#fff',
     padding: 24,
+    gap: 12,
   },
   title: {
     fontFamily: 'Fraunces_500Medium',
     fontSize: 36,
-    marginBottom: 8,
     color: '#0A0A0B',
   },
-  subtitle: {
+  date: {
     fontFamily: 'JetBrainsMono_400Regular',
     fontSize: 14,
     color: '#9A9A9F',
-    marginBottom: 24,
   },
   note: {
     fontFamily: 'JetBrainsMono_400Regular',
     fontSize: 11,
     color: '#D7D7DB',
     letterSpacing: 1,
+    marginTop: 8,
+  },
+  signOutBtn: {
+    marginTop: 24,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderWidth: 1,
+    borderColor: '#ECECEE',
+    borderRadius: 8,
+  },
+  signOutLabel: {
+    fontFamily: 'JetBrainsMono_400Regular',
+    fontSize: 11,
+    letterSpacing: 2,
+    color: '#9A9A9F',
   },
 });
